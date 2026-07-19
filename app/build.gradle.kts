@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
-
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -24,7 +24,6 @@ android {
     buildTypes {
         debug {
             isDebuggable=true
-            applicationIdSuffix=".debug"
             versionNameSuffix="_debug"
         }
         release {
