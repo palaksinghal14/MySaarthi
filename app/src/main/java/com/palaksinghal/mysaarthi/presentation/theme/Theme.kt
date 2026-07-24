@@ -40,7 +40,7 @@ private val MySaarthiScheme = lightColorScheme(
 )
 
 @Composable
-fun MySaarthi2Theme(
+fun MySaarthiTheme(
     content: @Composable () -> Unit
 ) {
 
