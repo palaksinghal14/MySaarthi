@@ -1,3 +1,50 @@
 <resources>
     <string name="app_name">MySaarthi</string>
+
+
+    <!-- Common actions -->
+    <string name="action_continue">Continue</string>
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_yes">Yes</string>
+    <string name="action_not_yet">Not yet</string>
+    <string name="action_reflect">Reflect</string>
+
+    <!-- Authentication -->
+    <string name="auth_sign_in">Sign In</string>
+    <string name="auth_sign_up">Sign Up</string>
+    <string name="auth_name_label">Name</string>
+    <string name="auth_email_label">Email</string>
+    <string name="auth_password_label">Password</string>
+    <string name="auth_confirm_password_label">Confirm Password</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_today">Today</string>
+    <string name="nav_nearby">Nearby</string>
+    <string name="nav_you">You</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_step_indicator">STEP %1$d OF %2$d</string>
+    <string name="onboarding_sadhana_title">Your daily sadhana</string>
+    <string name="onboarding_sadhana_subtitle">Choose the practices you want your companion to help you keep.</string>
+    <string name="onboarding_satsang_question">Open to satsang with nearby seekers ?</string>
+
+    <!-- Sadhana practices -->
+    <string name="practice_brahma_muhurta">Brahma muhurta</string>
+    <string name="practice_daily_paath">Daily paath</string>
+    <string name="practice_satwik_diet">Satwik diet</string>
+    <string name="practice_meditation">Meditation</string>
+
+    <!-- Home screen -->
+    <string name="home_greeting">Namaste, %1$s</string>
+    <string name="home_day_count">Day %1$d</string>
+    <string name="home_streak">%1$d-day streak</string>
+    <string name="home_todays_sadhana">Today\'s sadhana</string>
+    <string name="home_sadhana_progress">%1$d of %2$d</string>
+
+    <!-- Errors -->
+    <string name="error_network">No internet connection. Please try again.</string>
+    <string name="error_generic">Something went wrong. Please try again.</string>
+    <string name="error_auth_failed">Sign-in failed. Please try again.</string>
+
 </resources>
