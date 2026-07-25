@@ -43,8 +43,23 @@
     <string name="home_sadhana_progress">%1$d of %2$d</string>
 
     <!-- Errors -->
-    <string name="error_network">No internet connection. Please try again.</string>
-    <string name="error_generic">Something went wrong. Please try again.</string>
-    <string name="error_auth_failed">Sign-in failed. Please try again.</string>
+    <string name="error_no_internet">No internet connection. Please check your network.</string>
+    <string name="error_timeout">Request timed out. Please try again.</string>
+    <string name="error_server">Server error (%1$d). Please try again later.</string>
+    <string name="error_user_not_found">User is not found . Create a new Account</string>
+    <string name="error_wrong_password_exception">Password is Incorrect. Please try again with the Correct Password.</string>
+    <string name="error_email_already_exists_exception">This email is already registered. Sign In with this email or Create a new Account  .</string>
+    <string name="error_google_sign_in">Google sign-in failed. Please try again.</string>
+    <string name="error_firebase_unavailable">Service is temporarily unavailable. Please try again later.</string>
+    <string name="error_firestore_not_found">The data you\'re looking for couldn\'t be found.</string>
+    <string name="error_firestore_permission_denied">You don\'t have permission to do that.</string>
+    <string name="error_database">Something went wrong reading local data.</string>
+    <string name="error_gita_data_parse">Couldn\'t load shloka data. Please try again.</string>
+    <string name="error_location_permission_denied">Location permission is required to find nearby seekers.</string>
+    <string name="error_places_api">Couldn\'t fetch nearby places. Please try again.</string>
+    <string name="error_no_nearby_seekers">No seekers found nearby yet.</string>
+    <string name="error_notification_permission_denied">Enable notifications to get satsang alerts.</string>
+    <string name="error_unknown">Something went wrong. Please try again.</string>
 
 </resources>
+
