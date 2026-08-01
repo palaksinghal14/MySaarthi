@@ -4,7 +4,6 @@
 
 MySaarthi is an Android application built for people walking the Bhagwat Marg — a spiritual path that can often feel isolating without the right community around you. Instead of juggling separate apps for daily scripture, practice tracking, and finding like-minded people, MySaarthi brings everything into one coherent experience.
 
-Built as a portfolio project to demonstrate production-level Android development using modern Jetpack libraries, Clean Architecture, offline-first data handling, and real-time geo-based community features via GeoFirestore.
 
 ---
 
@@ -153,11 +152,6 @@ Open in Android Studio, let Gradle sync, connect a device or emulator and run.
 
 ---
 
-## 🚧 Status
-
-Currently in active development. Core architecture and foundation complete — community and daily practice features in progress.
-
----
 
 ## 👤 Author
 
