@@ -48,16 +48,17 @@ Built as a portfolio project to demonstrate production-level Android development
 
 MySaarthi follows Clean Architecture with MVVM and Hilt dependency injection, structured as a single module.
 
+```
 UI (Compose screens)
-↓
+    ↓
 ViewModel (StateFlow / UiState)
-↓
+    ↓
 Use Cases (domain layer)
-↓
+    ↓
 Repository (Room, Firebase, Retrofit, GeoFirestore)
-↓
+    ↓
 External Services (Firebase, Google Places, Bhagavad Gita API)
-
+```
 
 - **Data layer** — Remote (Retrofit, Firebase, GeoFirestore) and local (Room) sources behind repository interfaces
 - **Domain layer** — Use cases and domain models fully decoupled from Android framework
@@ -69,30 +70,31 @@ External Services (Firebase, Google Places, Bhagavad Gita API)
 
 ## 📁 Project Structure
 
+```
 app/src/main/java/com/palaksinghal/mysaarthi/
 ├── data/
-│ ├── local/ # Room database, DAOs, entities
-│ ├── remote/ # Retrofit API, Firebase, GeoFirestore
-│ └── repository/ # Repository implementations
+│   ├── local/          # Room database, DAOs, entities
+│   ├── remote/         # Retrofit API, Firebase, GeoFirestore
+│   └── repository/     # Repository implementations
 ├── domain/
-│ ├── model/ # Domain models, AppException
-│ ├── repository/ # Repository interfaces
-│ └── usecase/ # Use cases
+│   ├── model/          # Domain models, AppException
+│   ├── repository/     # Repository interfaces
+│   └── usecase/        # Use cases
 ├── presentation/
-│ ├── onboarding/ # Welcome, auth, questionnaire screens
-│ ├── home/ # Today tab — shloka, sadhana, check-in
-│ ├── nearby/ # Seeker discovery, temple finder
-│ ├── profile/ # Spiritual profile, settings
-│ └── components/ # Reusable composables
+│   ├── onboarding/     # Welcome, auth, questionnaire screens
+│   ├── home/           # Today tab — shloka, sadhana, check-in
+│   ├── nearby/         # Seeker discovery, temple finder
+│   ├── profile/        # Spiritual profile, settings
+│   └── components/     # Reusable composables
 ├── core/
-│ ├── utils/ # UiState, AppException, mappers
-│ ├── constants/ # App-wide constants
-│ └── navigation/ # Nav graphs
-├── di/ # Hilt modules
-├── worker/ # WorkManager workers
+│   ├── utils/          # UiState, AppException, mappers
+│   ├── constants/      # App-wide constants
+│   └── navigation/     # Nav graphs
+├── di/                 # Hilt modules
+├── worker/             # WorkManager workers
 ├── MainActivity.kt
-└── MySaarthi.kt # @HiltAndroidApp Application class
-
+└── MySaarthi.kt        # @HiltAndroidApp Application class
+```
 
 ---
 
