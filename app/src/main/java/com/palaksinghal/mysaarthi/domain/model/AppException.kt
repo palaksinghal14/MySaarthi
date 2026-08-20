@@ -33,4 +33,7 @@ sealed class AppException:Exception(){
 
     // Generic fallback
     data class UnknownException(val originalMessage: String?) : AppException()
+
+    object EmptyFieldsException : AppException()
+    object InvalidEmailFormatException : AppException()
 }

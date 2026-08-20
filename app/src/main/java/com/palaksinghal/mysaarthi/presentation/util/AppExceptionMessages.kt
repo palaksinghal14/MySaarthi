@@ -24,4 +24,6 @@ fun AppException.toUserMessage():String = when(this){
     is AppException.NoNearbySeekersException -> stringResource(R.string.error_no_nearby_seekers)
     is AppException.NotificationPermissionDeniedException -> stringResource(R.string.error_notification_permission_denied)
     is AppException.UnknownException -> this.originalMessage ?: stringResource(R.string.error_unknown)
+    is AppException.EmptyFieldsException -> stringResource(R.string.error_empty_fields)
+    is AppException.InvalidEmailFormatException -> stringResource(R.string.error_invalid_email)
 }

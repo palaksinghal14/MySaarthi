@@ -61,5 +61,8 @@
     <string name="error_notification_permission_denied">Enable notifications to get satsang alerts.</string>
     <string name="error_unknown">Something went wrong. Please try again.</string>
 
+    <string name="error_empty_fields">Please enter your email and password.</string>
+    <string name="error_invalid_email">Please enter a valid email address.</string>
+
 </resources>
 
