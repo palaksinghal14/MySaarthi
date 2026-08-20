@@ -1,10 +1,7 @@
 package com.palaksinghal.mysaarthi.di
 
-import dagger.Binds
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.palaksinghal.mysaarthi.data.repository.AuthenticationRepoImp
-import com.palaksinghal.mysaarthi.domain.repository.AuthenticationRepo
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,11 +23,3 @@ object FirebaseModule {
 
 }
 
-@Module
-@InstallIn(SingletonComponent::class)
-abstract class AuthModule{
-
-    @Binds
-    @Singleton
-    abstract fun bindAuthRepo(impl : AuthenticationRepoImp): AuthenticationRepo
-}
