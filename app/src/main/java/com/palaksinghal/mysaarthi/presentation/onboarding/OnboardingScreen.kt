@@ -6,12 +6,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -142,6 +145,61 @@ fun OnboardingScreen(
                             onClick = { viewModel.togglePractice(practice) }
                         )
                     }
+                    // Show added custom practices below presets
+                    val presetNames = listOf(
+                        "Brahma muhurta", "Daily paath",
+                        "Satwik diet", "Meditation", "Kirtan / chanting"
+                    )
+                    val customPractices = formState.selectedPractices.filter { it !in presetNames }
+                    if (customPractices.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        customPractices.forEach { practice ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .background(Terracotta100)
+                                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(36.dp)
+                                        .clip(RoundedCornerShape(10.dp))
+                                        .background(Accent),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Check,
+                                        contentDescription = null,
+                                        tint = Bg,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
+                                Text(
+                                    text = practice,
+                                    modifier = Modifier.weight(1f),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Medium,
+                                    color = Terracotta700
+                                )
+                                IconButton(
+                                    onClick = { viewModel.removeCustomPractice(practice) },
+                                    modifier = Modifier.size(32.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = "Remove $practice",
+                                        tint = Neutral600,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+                    }
+
                     Spacer(modifier = Modifier.height(4.dp))
                     // Custom practice input
                     Row(
@@ -584,7 +642,7 @@ fun WheelTimePickerDialog(
         },
         text = {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth() .padding(vertical = 8.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -633,6 +691,23 @@ fun WheelColumn(
     onSelected: (Int) -> Unit,
     label: String
 ) {
+    val itemHeightDp = 40.dp
+    val visibleItems = 3
+    val listState = rememberLazyListState(
+        initialFirstVisibleItemIndex = (selectedIndex - 1).coerceAtLeast(0)
+    )
+
+    // Snap to nearest item when scroll settles
+    LaunchedEffect(listState.isScrollInProgress) {
+        if (!listState.isScrollInProgress) {
+            val index = listState.firstVisibleItemIndex +
+                    if (listState.firstVisibleItemScrollOffset > 20) 1 else 0
+            val snappedIndex = index.coerceIn(0, items.size - 1)
+            listState.animateScrollToItem(snappedIndex)
+            onSelected(snappedIndex)
+        }
+    }
+
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             text = label,
@@ -641,28 +716,51 @@ fun WheelColumn(
             color = Neutral400,
             letterSpacing = 1.sp
         )
-        Spacer(modifier = Modifier.height(4.dp))
-        Column(
-            modifier = Modifier.height(140.dp),
-            verticalArrangement = Arrangement.spacedBy(0.dp)
+        Spacer(modifier = Modifier.height(6.dp))
+
+        Box(
+            modifier = Modifier
+                .width(64.dp)
+                .height(itemHeightDp * visibleItems)
         ) {
-            items.forEachIndexed { index, item ->
-                val isSelected = index == selectedIndex
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(if (isSelected) Terracotta100 else Color.Transparent)
-                        .clickable { onSelected(index) }
-                        .padding(horizontal = 12.dp, vertical = 6.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = item,
-                        fontFamily = FigtreeFamily,
-                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                        fontSize = if (isSelected) 18.sp else 14.sp,
-                        color = if (isSelected) Accent else Neutral500
-                    )
+            // Highlight bar behind the selected item
+            Box(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .fillMaxWidth()
+                    .height(itemHeightDp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(Terracotta100)
+            )
+
+            LazyColumn(
+                state = listState,
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(vertical = itemHeightDp)
+            ) {
+                itemsIndexed(items) { index, item ->
+                    val isSelected = index ==
+                            (listState.firstVisibleItemIndex +
+                                    if (listState.firstVisibleItemScrollOffset > 20) 1 else 0)
+                                .coerceIn(0, items.size - 1)
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(itemHeightDp)
+                            .clickable {
+                                onSelected(index)
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = item,
+                            fontFamily = FigtreeFamily,
+                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                            fontSize = if (isSelected) 18.sp else 14.sp,
+                            color = if (isSelected) Accent else Neutral400
+                        )
+                    }
                 }
             }
         }

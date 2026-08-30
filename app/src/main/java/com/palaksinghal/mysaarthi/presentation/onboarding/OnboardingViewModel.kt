@@ -185,4 +185,13 @@ class OnboardingViewModel @Inject constructor(
     fun resetSaveState() {
         _saveState.value = OnboardingUiState.Idle
     }
+
+    fun removeCustomPractice(practice: String) {
+        _formState.update { current ->
+            current.copy(
+                selectedPractices = current.selectedPractices - practice,
+                practiceReminders = current.practiceReminders.filter { it.practice != practice }
+            )
+        }
+    }
 }
