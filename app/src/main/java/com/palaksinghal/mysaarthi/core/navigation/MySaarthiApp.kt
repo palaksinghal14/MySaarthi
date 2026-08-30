@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.palaksinghal.mysaarthi.presentation.authentication.LoginScreen
 import com.palaksinghal.mysaarthi.presentation.authentication.RegisterScreen
+import com.palaksinghal.mysaarthi.presentation.onboarding.OnboardingScreen
 import com.palaksinghal.mysaarthi.presentation.splash.SplashScreen
 
 
@@ -14,7 +15,7 @@ fun MySaarthiApp(){
 
     val mainNavController  = rememberNavController()
 
-    NavHost(navController = mainNavController , startDestination = ScreenRoutes.Register.route){
+    NavHost(navController = mainNavController , startDestination = ScreenRoutes.Onboarding.route){
         composable(route= ScreenRoutes.Splash.route){
             SplashScreen()
         }
@@ -34,6 +35,13 @@ fun MySaarthiApp(){
             )
         }
         composable(route= ScreenRoutes.Onboarding.route){
+            OnboardingScreen(
+                onOnboardingComplete = {
+                    mainNavController.navigate(ScreenRoutes.Home.route){
+                        popUpTo(ScreenRoutes.Onboarding.route){inclusive=true}
+                    }
+                }
+            )
 
         }
         composable(route= ScreenRoutes.Home.route){

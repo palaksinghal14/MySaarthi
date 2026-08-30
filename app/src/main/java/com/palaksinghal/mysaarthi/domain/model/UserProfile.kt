@@ -7,5 +7,6 @@ data class UserProfile(
     val howLongOnPath: String = "",
     val isOpenToSatsang: Boolean = false,
     val spiritualIntro: String = "",
-    val onboardingCompleted: Boolean = false
+    val onboardingCompleted: Boolean = false,
+    val practiceReminders :List<Map<String, Any>> = emptyList()
 )
