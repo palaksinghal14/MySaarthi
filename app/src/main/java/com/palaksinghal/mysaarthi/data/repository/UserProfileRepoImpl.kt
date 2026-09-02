@@ -28,7 +28,7 @@ class UserProfileRepoImpl @Inject constructor(
              Result.failure(e.toAppException())
         }
     }
-    override suspend fun getUserProfile(uid: String): Result<UserProfile> {
+    override suspend fun getUserProfile(uid: String): Result<UserProfile?> {
         return try {
 
             val snapshot = firestore.collection("users")
@@ -37,7 +37,6 @@ class UserProfileRepoImpl @Inject constructor(
                 .await()
 
             val userProfile = snapshot.toObject(UserProfile::class.java)
-                ?: return Result.failure(AppException.FirestoreNotFoundException)
             Result.success(userProfile)
         }catch (e: Exception) {
             Result.failure(e.toAppException())
