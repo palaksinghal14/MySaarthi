@@ -45,6 +45,9 @@ class AuthenticationRepoImp @Inject constructor(
         }
     }
 
+    override fun getCurrentUserId(): String? {
+       return auth.currentUser?.uid
+    }
 }
 
 private fun FirebaseUser.toDomainUser() =User(
