@@ -25,7 +25,10 @@ fun MySaarthiApp(){
             )
         }
         composable(route= ScreenRoutes.Welcome.route){
-            WelcomeScreen()
+            WelcomeScreen(
+                onGetStarted = { mainNavController.navigate(ScreenRoutes.Register.route)},
+                onAlreadyHaveAccount ={  mainNavController.navigate(ScreenRoutes.Login.route)}
+            )
         }
         composable(route= ScreenRoutes.Login.route){
             LoginScreen(
