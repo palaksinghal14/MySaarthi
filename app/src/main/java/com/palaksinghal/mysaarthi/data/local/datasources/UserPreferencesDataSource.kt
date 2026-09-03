@@ -1,9 +1,10 @@
-package com.palaksinghal.mysaarthi.data.local
+package com.palaksinghal.mysaarthi.data.local.datasources
 
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.palaksinghal.mysaarthi.domain.model.PracticeReminder
@@ -24,6 +25,7 @@ class UserPreferencesDataSource @Inject constructor(
 
     private object Keys {
         val PRACTICE_REMINDERS = stringPreferencesKey("practice_reminders")
+        val CURRENT_SHLOKA_INDEX = intPreferencesKey("current_shloka_index")
     }
 
     // Read reminders as a Flow — emits whenever reminders change
@@ -40,6 +42,19 @@ class UserPreferencesDataSource @Inject constructor(
     suspend fun savePracticeReminders(reminders: List<PracticeReminder>) {
         context.dataStore.edit { preferences ->
             preferences[Keys.PRACTICE_REMINDERS] = Json.encodeToString(reminders)
+        }
+    }
+
+
+    // for storing user's current shloka progress
+    val currentShlokaIndex: Flow<Int> = context.dataStore.data.map { prefs ->
+        prefs[Keys.CURRENT_SHLOKA_INDEX] ?: 1  // default: start at verse 1
+    }
+
+    suspend fun advanceShloka() {
+        context.dataStore.edit { prefs ->
+            val current = prefs[Keys.CURRENT_SHLOKA_INDEX] ?: 1
+            prefs[Keys.CURRENT_SHLOKA_INDEX] = if (current >= 700) 1 else current + 1
         }
     }
 }
