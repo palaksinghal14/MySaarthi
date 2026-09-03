@@ -1,8 +1,10 @@
 package com.palaksinghal.mysaarthi.di
 
 import com.palaksinghal.mysaarthi.data.repository.AuthenticationRepoImp
+import com.palaksinghal.mysaarthi.data.repository.ShlokaRepoImpl
 import com.palaksinghal.mysaarthi.data.repository.UserProfileRepoImpl
 import com.palaksinghal.mysaarthi.domain.repository.AuthenticationRepo
+import com.palaksinghal.mysaarthi.domain.repository.ShlokaRepo
 import com.palaksinghal.mysaarthi.domain.repository.UserProfileRepo
 import dagger.Binds
 import dagger.Module
@@ -21,5 +23,9 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindUserProfileRepo(impl : UserProfileRepoImpl): UserProfileRepo
+
+    @Binds
+    @Singleton
+    abstract fun bindShlokaRepo( impl : ShlokaRepoImpl): ShlokaRepo
 }
 

@@ -1,7 +1,7 @@
 package com.palaksinghal.mysaarthi.presentation.onboarding
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.palaksinghal.mysaarthi.data.local.UserPreferencesDataSource
+import com.palaksinghal.mysaarthi.data.local.datasources.UserPreferencesDataSource
 import com.palaksinghal.mysaarthi.domain.model.AppException
 import com.palaksinghal.mysaarthi.domain.model.PracticeReminder
 import com.palaksinghal.mysaarthi.domain.model.UserProfile
