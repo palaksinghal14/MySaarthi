@@ -39,14 +39,14 @@ class SplashViewModel @Inject constructor(
                        return@launch
                    }
 
-               userProfileRepo.getUserProfile(uid)
-                   .onSuccess { profile ->
-                       if (profile!=null && profile.onboardingCompleted){
-                           _splashUiState.value= SplashUiState.OnNavToHome
-                       }else{
-                           // profile == null (no document) OR profile exists but incomplete
-                           // both go to onboarding
-                           _splashUiState.value= SplashUiState.OnNavToOnboarding
+
+               userProfileRepo.isOnboardingCompleted(uid)
+                   .onSuccess { isCompleted->
+                       if(isCompleted){
+                           _splashUiState.value = SplashUiState.OnNavToHome
+                       }
+                       else{
+                           _splashUiState.value = SplashUiState.OnNavToOnboarding
                        }
                    }
                    .onFailure { throwable ->
