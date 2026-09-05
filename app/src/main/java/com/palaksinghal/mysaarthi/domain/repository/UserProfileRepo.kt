@@ -6,5 +6,5 @@ interface UserProfileRepo {
 
     suspend fun saveUserProfile(userProfile: UserProfile) :Result<Unit>
     suspend fun getUserProfile(uid:String) :Result<UserProfile?>
-
+    suspend fun isOnboardingCompleted(uid: String): Result<Boolean>
 }
