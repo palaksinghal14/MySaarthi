@@ -39,12 +39,21 @@ class UserProfileRepoImpl @Inject constructor(
     override suspend fun getUserProfile(uid: String): Result<UserProfile?> {
         return try {
 
+            val localProfile= userProfileDao.getUserProfile(uid)
+
+            if(localProfile!=null){
+                Result.success(localProfile)
+            }
+
             val snapshot = firestore.collection("users")
                 .document(uid)
                 .get()
                 .await()
 
             val userProfile = snapshot.toObject(UserProfile::class.java)
+            if(userProfile!=null){
+                userProfileDao.insertUserProfile(userProfile.toEntity())
+            }
             Result.success(userProfile)
         } catch (e: Exception) {
             Result.failure(e.toAppException())
