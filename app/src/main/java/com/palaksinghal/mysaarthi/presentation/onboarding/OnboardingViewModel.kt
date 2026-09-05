@@ -179,6 +179,7 @@ class OnboardingViewModel @Inject constructor(
                         ?: AppException.UnknownException(throwable.message)
                     _saveState.value = OnboardingUiState.Error(exception)
                 }
+
         }
     }
 
