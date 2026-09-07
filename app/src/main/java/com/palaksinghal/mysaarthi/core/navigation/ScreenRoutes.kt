@@ -12,4 +12,9 @@ sealed class ScreenRoutes(val route :String) {
     object Today : ScreenRoutes("today")
     object Nearby : ScreenRoutes("nearby")
     object You : ScreenRoutes("you")
+
+    // routes on today screen
+    object ShlokaDetail : ScreenRoutes("shloka_detail")
+    object SadhanaDetail : ScreenRoutes("sadhana_detail")
+    object EveningCheckIn : ScreenRoutes("evening_checkin")
 }

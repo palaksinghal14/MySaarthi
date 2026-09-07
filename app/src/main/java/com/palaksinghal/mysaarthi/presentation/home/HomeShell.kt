@@ -20,6 +20,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.palaksinghal.mysaarthi.R
 import com.palaksinghal.mysaarthi.core.navigation.ScreenRoutes
+import com.palaksinghal.mysaarthi.presentation.home.today.EveningCheckInScreen
+import com.palaksinghal.mysaarthi.presentation.home.today.SadhanaDetailScreen
+import com.palaksinghal.mysaarthi.presentation.home.today.ShlokaDetailScreen
+import com.palaksinghal.mysaarthi.presentation.home.today.TodayScreen
 import com.palaksinghal.mysaarthi.presentation.nearby.NearbyScreen
 import com.palaksinghal.mysaarthi.presentation.profile.YouScreen
 import com.palaksinghal.mysaarthi.presentation.theme.Accent
@@ -100,7 +104,32 @@ fun HomeShell() {
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            composable(ScreenRoutes.Today.route) { TodayScreen() }
+            composable(ScreenRoutes.Today.route) {
+                TodayScreen(
+                    onShlokaClick = {
+                        tabNavController.navigate(ScreenRoutes.ShlokaDetail.route)
+                    },
+                    onSadhanaClick = {
+                        tabNavController.navigate(ScreenRoutes.SadhanaDetail.route)
+                    },
+                    onEveningCheckInClick = {
+                        tabNavController.navigate(ScreenRoutes.EveningCheckIn.route)
+                    }
+                )
+            }
+            composable(ScreenRoutes.ShlokaDetail.route) {
+                ShlokaDetailScreen(onBack = { tabNavController.popBackStack() })
+            }
+            composable(ScreenRoutes.SadhanaDetail.route) { backStackEntry ->
+                SadhanaDetailScreen(
+                    onBack = { tabNavController.popBackStack() },
+                    navController = tabNavController,
+                    backStackEntry = backStackEntry
+                )
+            }
+            composable(ScreenRoutes.EveningCheckIn.route) {
+                EveningCheckInScreen(onBack = { tabNavController.popBackStack() })
+            }
             composable(ScreenRoutes.Nearby.route) { NearbyScreen() }
             composable(ScreenRoutes.You.route) { YouScreen() }
         }

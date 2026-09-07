@@ -9,6 +9,7 @@
         val error : AppException?=null,
         val shloka: Shloka?=null,
         val sadhanaEntries :List<SadhanaEntry> =emptyList(),
+        val practiceReminders: List<Map<String, Any>> = emptyList(),
         val displayName:String="",
         val isEvening:Boolean =false
     )

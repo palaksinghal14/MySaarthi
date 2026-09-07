@@ -1,5 +1,6 @@
-package com.palaksinghal.mysaarthi.presentation.home
+package com.palaksinghal.mysaarthi.presentation.home.today
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -40,6 +41,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.palaksinghal.mysaarthi.R
 import com.palaksinghal.mysaarthi.domain.model.SadhanaEntry
 import com.palaksinghal.mysaarthi.domain.model.Shloka
+import com.palaksinghal.mysaarthi.presentation.home.HomeViewModel
 import com.palaksinghal.mysaarthi.presentation.theme.Accent
 import com.palaksinghal.mysaarthi.presentation.theme.Bg
 import com.palaksinghal.mysaarthi.presentation.theme.CaprasimoFamily
@@ -215,7 +217,7 @@ private fun ShlokaCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
         color = Surface,
-        border = androidx.compose.foundation.BorderStroke(1.dp, Neutral300),
+        border = BorderStroke(1.dp, Neutral300),
         onClick = onClick
     ) {
         Column(
@@ -296,7 +298,7 @@ private fun SadhanaCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
         color = Bg,
-        border = androidx.compose.foundation.BorderStroke(1.dp, Neutral300),
+        border = BorderStroke(1.dp, Neutral300),
         onClick = onClick
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
@@ -390,7 +392,7 @@ private fun EveningCheckInCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
         color = Terracotta100,
-        border = androidx.compose.foundation.BorderStroke(1.dp, Accent),
+        border = BorderStroke(1.dp, Accent),
         onClick = onClick
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
@@ -434,7 +436,7 @@ private fun EveningCheckInCard(
                     Surface(
                         shape = RoundedCornerShape(20.dp),
                         color = Bg,
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Neutral300),
+                        border = BorderStroke(1.dp, Neutral300),
                         modifier = Modifier.clickable { }
                     ) {
                         Text(

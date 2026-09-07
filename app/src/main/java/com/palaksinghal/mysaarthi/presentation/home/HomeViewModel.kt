@@ -58,7 +58,8 @@ class HomeViewModel @Inject constructor(
                 .onSuccess { profile ->
                      val name= profile?.displayName
                      _uiState.update { it.copy(
-                           displayName = name?:""
+                           displayName = name?:"",
+                         practiceReminders = profile?.practiceReminders ?: emptyList()
                          )
                      }
                 }.onFailure { throwable ->
