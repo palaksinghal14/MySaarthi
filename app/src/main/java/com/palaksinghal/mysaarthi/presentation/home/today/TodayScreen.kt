@@ -57,6 +57,9 @@ import java.util.Locale
 
 @Composable
 fun TodayScreen(
+    onShlokaClick: () -> Unit,
+    onSadhanaClick: () -> Unit,
+    onEveningCheckInClick: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -120,7 +123,8 @@ fun TodayScreen(
                     uiState.shloka?.let { shloka ->
                         ShlokaCard(
                             shloka = shloka,
-                            onAdvance = { viewModel.advanceNextShloka() }
+                            onAdvance = { viewModel.advanceNextShloka() },
+                            onClick = onShlokaClick
                         )
                     }
 
@@ -130,14 +134,18 @@ fun TodayScreen(
                             entries = uiState.sadhanaEntries,
                             onToggle = { practice, isCompleted ->
                                 viewModel.onToggle(practice, isCompleted)
-                            }
+                            },
+                            onClick = onSadhanaClick
                         )
                     }
 
+                    EveningCheckInCard(
+                        onClick = onEveningCheckInClick
+                    )
                     // Evening check-in — only shows after 6 PM
-                    if (uiState.isEvening) {
-                        EveningCheckInCard()
-                    }
+                   // if (uiState.isEvening) {
+                  //      EveningCheckInCard()
+                  //  }
 
                     Spacer(modifier = Modifier.height(16.dp))
                 }
@@ -200,13 +208,15 @@ private fun TodayHeader(
 @Composable
 private fun ShlokaCard(
     shloka: Shloka,
-    onAdvance: () -> Unit
+    onAdvance: () -> Unit,
+    onClick: () -> Unit
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
         color = Surface,
-        border = androidx.compose.foundation.BorderStroke(1.dp, Neutral300)
+        border = androidx.compose.foundation.BorderStroke(1.dp, Neutral300),
+        onClick = onClick
     ) {
         Column(
             modifier = Modifier.padding(20.dp)
@@ -277,7 +287,8 @@ private fun ShlokaCard(
 @Composable
 private fun SadhanaCard(
     entries: List<SadhanaEntry>,
-    onToggle: (practice: String, isCompleted: Boolean) -> Unit
+    onToggle: (practice: String, isCompleted: Boolean) -> Unit,
+    onClick: () -> Unit
 ) {
     val completedCount = entries.count { it.isCompleted }
 
@@ -285,7 +296,8 @@ private fun SadhanaCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
         color = Bg,
-        border = androidx.compose.foundation.BorderStroke(1.dp, Neutral300)
+        border = androidx.compose.foundation.BorderStroke(1.dp, Neutral300),
+        onClick = onClick
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
             Row(
@@ -371,12 +383,15 @@ private fun SadhanaEntryRow(
 }
 
 @Composable
-private fun EveningCheckInCard() {
+private fun EveningCheckInCard(
+    onClick: () -> Unit
+) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
         color = Terracotta100,
-        border = androidx.compose.foundation.BorderStroke(1.dp, Accent)
+        border = androidx.compose.foundation.BorderStroke(1.dp, Accent),
+        onClick = onClick
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
             Text(
