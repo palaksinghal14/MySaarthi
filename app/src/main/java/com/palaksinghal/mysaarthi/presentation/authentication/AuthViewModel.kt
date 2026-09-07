@@ -7,6 +7,7 @@ import com.palaksinghal.mysaarthi.core.utils.toAppException
 import com.palaksinghal.mysaarthi.domain.model.AppException
 import com.palaksinghal.mysaarthi.domain.model.User
 import com.palaksinghal.mysaarthi.domain.repository.AuthenticationRepo
+import com.palaksinghal.mysaarthi.domain.repository.UserProfileRepo
 import com.palaksinghal.mysaarthi.presentation.util.toUserMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val authRepo : AuthenticationRepo
+    private val authRepo : AuthenticationRepo,
+    private val userProfileRepo: UserProfileRepo
 ): ViewModel(){
 
     private val _authState= MutableStateFlow<AuthUiState>(AuthUiState.Idle)
@@ -39,7 +41,7 @@ class AuthViewModel @Inject constructor(
              _authState.value= AuthUiState.Loading
              authRepo.loginWithEmail(email,password)
                  .onSuccess {
-                     _authState.value= AuthUiState.Success
+                     decidePostLoginNavigation()
                  }
                  .onFailure { throwable ->
 
@@ -85,4 +87,30 @@ class AuthViewModel @Inject constructor(
     fun resetState() {
         _authState.value = AuthUiState.Idle
     }
+
+
+    private fun decidePostLoginNavigation(){
+        val uid = authRepo.getCurrentUserId() ?: run {
+            _authState.value = AuthUiState.Error(
+                AppException.UnknownException("No user found after login")
+            )
+            return
+        }
+        viewModelScope.launch {
+            userProfileRepo.isOnboardingCompleted(uid)
+                .onSuccess { isCompleted ->
+                    if (isCompleted) {
+                        _authState.value = AuthUiState.onNavigateToHome
+                    } else {
+                        _authState.value = AuthUiState.onNavigateToOnboarding
+                    }
+                }
+                .onFailure {
+                    // If check fails, default to onboarding — safer than skipping it
+                    _authState.value = AuthUiState.onNavigateToOnboarding
+                }
+        }
+
+    }
+
 }

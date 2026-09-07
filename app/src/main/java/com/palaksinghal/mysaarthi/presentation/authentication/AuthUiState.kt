@@ -7,4 +7,6 @@ sealed class AuthUiState {
     object Loading : AuthUiState()
     object Success : AuthUiState()
     data class Error( val exception: AppException): AuthUiState()
+    object onNavigateToHome : AuthUiState()
+    object onNavigateToOnboarding : AuthUiState()
 }

@@ -58,7 +58,8 @@ import com.palaksinghal.mysaarthi.presentation.util.toUserMessage
 
 @Composable
 fun LoginScreen(
-    onLoginSuccess: () -> Unit,
+    onLoginSuccessGoHome: () -> Unit,
+    onLoginSuccessGoOnboarding: () -> Unit,
     onNavigateToRegister: () -> Unit,
     viewModel: AuthViewModel = hiltViewModel()
 ) {
@@ -68,11 +69,21 @@ fun LoginScreen(
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
-    LaunchedEffect(authState) {
-        if (authState is AuthUiState.Success) {
-            viewModel.resetState()
-            onLoginSuccess()
+    LaunchedEffect(authState)
+    {
+        when(authState){
+            is AuthUiState.onNavigateToHome -> {
+                viewModel.resetState()
+                onLoginSuccessGoHome()
+            }
+            is AuthUiState.onNavigateToOnboarding->{
+                viewModel.resetState()
+                onLoginSuccessGoOnboarding()
+            }
+            else -> {}
+
         }
+
     }
 
     Box(
