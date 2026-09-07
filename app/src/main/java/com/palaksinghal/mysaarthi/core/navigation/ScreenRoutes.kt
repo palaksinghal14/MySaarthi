@@ -7,4 +7,9 @@ sealed class ScreenRoutes(val route :String) {
     object Register : ScreenRoutes("register")
     object Onboarding : ScreenRoutes("onboarding")
     object Home : ScreenRoutes("home")
+
+    // Tab routes — nested inside Home
+    object Today : ScreenRoutes("today")
+    object Nearby : ScreenRoutes("nearby")
+    object You : ScreenRoutes("you")
 }

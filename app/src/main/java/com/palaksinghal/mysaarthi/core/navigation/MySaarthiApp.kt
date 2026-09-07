@@ -4,8 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.palaksinghal.mysaarthi.presentation.authentication.AuthUiState
 import com.palaksinghal.mysaarthi.presentation.authentication.LoginScreen
 import com.palaksinghal.mysaarthi.presentation.authentication.RegisterScreen
+import com.palaksinghal.mysaarthi.presentation.home.HomeShell
 import com.palaksinghal.mysaarthi.presentation.onboarding.OnboardingScreen
 import com.palaksinghal.mysaarthi.presentation.splash.SplashScreen
 import com.palaksinghal.mysaarthi.presentation.welcome.WelcomeScreen
@@ -32,13 +34,14 @@ fun MySaarthiApp(){
         }
         composable(route= ScreenRoutes.Login.route){
             LoginScreen(
-                onLoginSuccess = { mainNavController.navigate(ScreenRoutes.Home.route) },
+                onLoginSuccessGoHome ={ mainNavController.navigate(ScreenRoutes.Home.route) },
+                onLoginSuccessGoOnboarding = {mainNavController.navigate(ScreenRoutes.Onboarding.route)},
                 onNavigateToRegister = {mainNavController.navigate(ScreenRoutes.Register.route)}
             )
         }
         composable(route= ScreenRoutes.Register.route){
             RegisterScreen(
-                onRegisterSuccess = {mainNavController.navigate(ScreenRoutes.Home.route)},
+                onRegisterSuccess = {mainNavController.navigate(ScreenRoutes.Onboarding.route)},
                 onNavigateToLogin = {mainNavController.navigate(ScreenRoutes.Login.route)}
             )
         }
@@ -53,7 +56,7 @@ fun MySaarthiApp(){
 
         }
         composable(route= ScreenRoutes.Home.route){
-
+             HomeShell()
         }
 
     }
