@@ -1,0 +1,108 @@
+package com.palaksinghal.mysaarthi.presentation.home
+
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import com.palaksinghal.mysaarthi.R
+import com.palaksinghal.mysaarthi.core.navigation.ScreenRoutes
+import com.palaksinghal.mysaarthi.presentation.nearby.NearbyScreen
+import com.palaksinghal.mysaarthi.presentation.profile.YouScreen
+import com.palaksinghal.mysaarthi.presentation.theme.Accent
+import com.palaksinghal.mysaarthi.presentation.theme.Bg
+import com.palaksinghal.mysaarthi.presentation.theme.FigtreeFamily
+import com.palaksinghal.mysaarthi.presentation.theme.Neutral400
+import com.palaksinghal.mysaarthi.presentation.theme.Surface
+
+data class BottomNavItem(
+    val route: String,
+    val label: String,
+    val icon: Int
+)
+
+@Composable
+fun HomeShell() {
+    val tabNavController = rememberNavController()
+    val navBackStackEntry by tabNavController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+
+    val tabs = listOf(
+        BottomNavItem(ScreenRoutes.Today.route, "Today", R.drawable.ic_brahma_muhurta),
+        BottomNavItem(ScreenRoutes.Nearby.route, "Nearby", R.drawable.ic_location),
+        BottomNavItem(ScreenRoutes.You.route, "You", R.drawable.ic_satsang)
+    )
+
+    Scaffold(
+        containerColor = Bg,
+        bottomBar = {
+            NavigationBar(
+                containerColor = Bg,
+                tonalElevation = androidx.compose.ui.unit.Dp(0f)
+            ) {
+                tabs.forEach { tab ->
+                    val isSelected = currentDestination?.hierarchy?.any {
+                        it.route == tab.route
+                    } == true
+
+                    NavigationBarItem(
+                        selected = isSelected,
+                        onClick = {
+                            tabNavController.navigate(tab.route) {
+                                popUpTo(tabNavController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        },
+                        icon = {
+                            Icon(
+                                painter = painterResource(id = tab.icon),
+                                contentDescription = tab.label
+                            )
+                        },
+                        label = {
+                            Text(
+                                text = tab.label,
+                                fontFamily = FigtreeFamily
+                            )
+                        },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = Accent,
+                            selectedTextColor = Accent,
+                            unselectedIconColor = Neutral400,
+                            unselectedTextColor = Neutral400,
+                            indicatorColor = Surface
+                        )
+                    )
+                }
+            }
+        }
+    ) { innerPadding ->
+        NavHost(
+            navController = tabNavController,
+            startDestination = ScreenRoutes.Today.route,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            composable(ScreenRoutes.Today.route) { TodayScreen() }
+            composable(ScreenRoutes.Nearby.route) { NearbyScreen() }
+            composable(ScreenRoutes.You.route) { YouScreen() }
+        }
+    }
+}
