@@ -27,56 +27,47 @@ class YouViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     init {
-        loadProfile()
+        observeProfile()
+        loadStreakData()
     }
 
-    fun loadProfile() {
+    fun observeProfile(){
+        viewModelScope.launch {
+            val uid = authRepo.getCurrentUserId()?: return@launch
+            userProfileRepo.observeUserProfile(uid).collect { profile ->
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        displayName = profile?.displayName?:"",
+                        spiritualIntro = profile?.spiritualIntro ?: "",
+                        practices = profile?.practices ?: emptyList(),
+                        howLongOnPath = profile?.howLongOnPath ?: "",
+                        isOpenToSatsang = profile?.isOpenToSatsang ?: false
+                    )
+                }
+            }
+        }
+    }
+    fun loadStreakData() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
-            val uid = authRepo.getCurrentUserId()
-            if (uid == null) {
-                _uiState.update { it.copy(isLoading = false) }
-                return@launch
-            }
 
-            // Load profile and streak data simultaneously
-            val profileDeferred = async { userProfileRepo.getUserProfile(uid) }
-            val completedDatesDeferred = async { sadhanaDao.getAllCompletedDates() }
-            val last30Deferred = async {
-                val startDate = LocalDate.now().minusDays(29).toString()
-                sadhanaDao.getCompletionRatioByDate(startDate)
-            }
+            val completedDates =  sadhanaDao.getAllCompletedDates()
+            val startDate = LocalDate.now().minusDays(29).toString()
+            val last30Data = sadhanaDao.getCompletionRatioByDate(startDate)
 
-            val profileResult = profileDeferred.await()
-            val completedDates = completedDatesDeferred.await()
-            val last30Data = last30Deferred.await()
-
-            profileResult
-                .onSuccess { profile ->
-                    val stats = calculateStats(completedDates)
-                    val grid = buildLast30DaysGrid(last30Data)
+            val stats = calculateStats(completedDates)
+            val grid = buildLast30DaysGrid(last30Data)
 
                     _uiState.update {
                         it.copy(
-                            isLoading = false,
-                            displayName = profile?.displayName ?: "",
-                            spiritualIntro = profile?.spiritualIntro ?: "",
-                            practices = profile?.practices ?: emptyList(),
-                            howLongOnPath = profile?.howLongOnPath ?: "",
-                            isOpenToSatsang = profile?.isOpenToSatsang ?: false,
                             currentStreak = stats.first,
                             longestStreak = stats.second,
                             daysPracticed = stats.third,
                             last30Days = grid
                         )
                     }
-                }
-                .onFailure { throwable ->
-                    val exception = throwable as? AppException
-                        ?: AppException.UnknownException(throwable.message)
-                    _uiState.update { it.copy(isLoading = false, error = exception) }
-                }
         }
     }
 
