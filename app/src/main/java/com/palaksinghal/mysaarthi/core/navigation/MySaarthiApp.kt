@@ -56,7 +56,13 @@ fun MySaarthiApp(){
 
         }
         composable(route= ScreenRoutes.Home.route){
-             HomeShell()
+             HomeShell(
+                 onSignOut = {
+                     mainNavController.navigate(ScreenRoutes.Welcome.route){
+                         popUpTo(0){inclusive=true}
+                     }
+                 }
+             )
         }
 
     }

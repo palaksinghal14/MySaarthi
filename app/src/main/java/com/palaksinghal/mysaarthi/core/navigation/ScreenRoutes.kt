@@ -16,5 +16,9 @@ sealed class ScreenRoutes(val route :String) {
     // routes on today screen
     object ShlokaDetail : ScreenRoutes("shloka_detail")
     object SadhanaDetail : ScreenRoutes("sadhana_detail")
-    object EveningCheckIn : ScreenRoutes("evening_checkin")
+    object EveningCheckIn : ScreenRoutes("evening_check_in")
+
+    //routes on profile screen
+    object EditProfile : ScreenRoutes("edit_profile")
+    object Settings : ScreenRoutes("settings")
 }

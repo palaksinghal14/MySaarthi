@@ -25,7 +25,9 @@ import com.palaksinghal.mysaarthi.presentation.home.today.SadhanaDetailScreen
 import com.palaksinghal.mysaarthi.presentation.home.today.ShlokaDetailScreen
 import com.palaksinghal.mysaarthi.presentation.home.today.TodayScreen
 import com.palaksinghal.mysaarthi.presentation.nearby.NearbyScreen
-import com.palaksinghal.mysaarthi.presentation.profile.YouScreen
+import com.palaksinghal.mysaarthi.presentation.home.profile.YouScreen
+import com.palaksinghal.mysaarthi.presentation.profile.EditProfileScreen
+import com.palaksinghal.mysaarthi.presentation.profile.SettingsScreen
 import com.palaksinghal.mysaarthi.presentation.theme.Accent
 import com.palaksinghal.mysaarthi.presentation.theme.Bg
 import com.palaksinghal.mysaarthi.presentation.theme.FigtreeFamily
@@ -39,10 +41,20 @@ data class BottomNavItem(
 )
 
 @Composable
-fun HomeShell() {
+fun HomeShell(
+    onSignOut:()->Unit
+) {
     val tabNavController = rememberNavController()
     val navBackStackEntry by tabNavController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
+
+    // Only show bottom bar on the three main tab routes
+    // Hide it on detail screens like ShlokaDetail, SadhanaDetail etc.
+    val showBottomBar = currentDestination?.route in listOf(
+        ScreenRoutes.Today.route,
+        ScreenRoutes.Nearby.route,
+        ScreenRoutes.You.route
+    )
 
     val tabs = listOf(
         BottomNavItem(ScreenRoutes.Today.route, "Today", R.drawable.ic_brahma_muhurta),
@@ -53,46 +65,48 @@ fun HomeShell() {
     Scaffold(
         containerColor = Bg,
         bottomBar = {
-            NavigationBar(
-                containerColor = Bg,
-                tonalElevation = androidx.compose.ui.unit.Dp(0f)
-            ) {
-                tabs.forEach { tab ->
-                    val isSelected = currentDestination?.hierarchy?.any {
-                        it.route == tab.route
-                    } == true
+            if(showBottomBar) {
+                NavigationBar(
+                    containerColor = Bg,
+                    tonalElevation = androidx.compose.ui.unit.Dp(0f)
+                ) {
+                    tabs.forEach { tab ->
+                        val isSelected = currentDestination?.hierarchy?.any {
+                            it.route == tab.route
+                        } == true
 
-                    NavigationBarItem(
-                        selected = isSelected,
-                        onClick = {
-                            tabNavController.navigate(tab.route) {
-                                popUpTo(tabNavController.graph.findStartDestination().id) {
-                                    saveState = true
+                        NavigationBarItem(
+                            selected = isSelected,
+                            onClick = {
+                                tabNavController.navigate(tab.route) {
+                                    popUpTo(tabNavController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        },
-                        icon = {
-                            Icon(
-                                painter = painterResource(id = tab.icon),
-                                contentDescription = tab.label
+                            },
+                            icon = {
+                                Icon(
+                                    painter = painterResource(id = tab.icon),
+                                    contentDescription = tab.label
+                                )
+                            },
+                            label = {
+                                Text(
+                                    text = tab.label,
+                                    fontFamily = FigtreeFamily
+                                )
+                            },
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = Accent,
+                                selectedTextColor = Accent,
+                                unselectedIconColor = Neutral400,
+                                unselectedTextColor = Neutral400,
+                                indicatorColor = Surface
                             )
-                        },
-                        label = {
-                            Text(
-                                text = tab.label,
-                                fontFamily = FigtreeFamily
-                            )
-                        },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = Accent,
-                            selectedTextColor = Accent,
-                            unselectedIconColor = Neutral400,
-                            unselectedTextColor = Neutral400,
-                            indicatorColor = Surface
                         )
-                    )
+                    }
                 }
             }
         }
@@ -131,7 +145,28 @@ fun HomeShell() {
                 EveningCheckInScreen(onBack = { tabNavController.popBackStack() })
             }
             composable(ScreenRoutes.Nearby.route) { NearbyScreen() }
-            composable(ScreenRoutes.You.route) { YouScreen() }
+            composable(ScreenRoutes.You.route) {
+                YouScreen(
+                onNavigateToEditProfile = {
+                    tabNavController.navigate(ScreenRoutes.EditProfile.route)
+                },
+                onNavigateToSettings = {
+                    tabNavController.navigate(ScreenRoutes.Settings.route)
+                }
+               )
+            }
+
+            composable(ScreenRoutes.EditProfile.route) {
+                EditProfileScreen(
+                    onBack = { tabNavController.popBackStack() }
+                )
+            }
+            composable(ScreenRoutes.Settings.route) {
+                SettingsScreen(
+                    onBack = { tabNavController.popBackStack() },
+                    onSignOut =  onSignOut
+                )
+            }
         }
     }
 }
