@@ -9,6 +9,8 @@ import com.palaksinghal.mysaarthi.data.local.entity.toEntity
 import com.palaksinghal.mysaarthi.domain.model.AppException
 import com.palaksinghal.mysaarthi.domain.model.UserProfile
 import com.palaksinghal.mysaarthi.domain.repository.UserProfileRepo
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -67,6 +69,12 @@ class UserProfileRepoImpl @Inject constructor(
         } catch (e: Exception) {
             Result.failure(e.toAppException())
         }
+    }
+
+    override fun observeUserProfile(uid: String): Flow<UserProfile?> {
+         return userProfileDao.observeUserProfile(uid).map { entity ->
+             entity?.toDomain()
+         }
     }
 }
 

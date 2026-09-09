@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.palaksinghal.mysaarthi.data.local.entity.UserProfileEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserProfileDao {
@@ -13,6 +14,9 @@ interface UserProfileDao {
 
     @Query("SELECT * FROM userProfile WHERE uid=:uid")
     suspend fun getUserProfile(uid: String) : UserProfileEntity?
+
+    @Query("SELECT * FROM userProfile WHERE uid=:uid")
+    fun observeUserProfile(uid:String): Flow<UserProfileEntity?>
 
     @Query("SELECT onboardingCompleted FROM userProfile WHERE uid = :uid")
     suspend fun isOnboardingCompleted(uid: String): Boolean?
