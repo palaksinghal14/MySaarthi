@@ -12,6 +12,8 @@ import com.palaksinghal.mysaarthi.domain.repository.UserProfileRepo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
 import javax.inject.Inject
 
 class UserProfileRepoImpl @Inject constructor(
@@ -27,10 +29,12 @@ class UserProfileRepoImpl @Inject constructor(
 
             userProfileDao.insertUserProfile(userProfile.copy(uid=uid).toEntity())
 
-            firestore.collection("users")
-                .document(uid)
-                .set(userProfile.copy(uid = uid))
-                .await()
+            withTimeoutOrNull(2000L){
+                firestore.collection("users")
+                    .document(uid)
+                    .set(userProfile.copy(uid = uid))
+                    .await()
+            }
 
             Result.success(Unit)
         } catch (e: Exception) {
