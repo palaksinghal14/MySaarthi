@@ -16,7 +16,11 @@ data class UserProfileEntity(
     val isOpenToSatsang: Boolean,
     val spiritualIntro: String,
     val onboardingCompleted: Boolean,
-    val practiceReminders :List<PracticeReminder>
+    val practiceReminders :List<PracticeReminder>,
+    val geohash: String,
+    val lat: Double,
+    val lng: Double,
+    val lastLocationUpdate: Long
 )
 
 fun UserProfileEntity.toDomain() = UserProfile(
@@ -35,7 +39,12 @@ fun UserProfileEntity.toDomain() = UserProfile(
             "amPm" to reminder.amPm,
             "isEnabled" to reminder.isEnabled
         )
-    }
+    },
+    geohash = geohash,
+    lat = lat,
+    lng = lng,
+    lastLocationUpdate = lastLocationUpdate
+
 )
 
 fun UserProfile.toEntity() = UserProfileEntity(
@@ -54,5 +63,9 @@ fun UserProfile.toEntity() = UserProfileEntity(
             amPm = map["amPm"] as? String ?: "AM",
             isEnabled = map["isEnabled"] as? Boolean ?: true
         )
-    }
+    },
+    geohash = geohash,
+    lat = lat,
+    lng = lng,
+    lastLocationUpdate = lastLocationUpdate
 )
