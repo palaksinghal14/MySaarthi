@@ -1,5 +1,9 @@
 package com.palaksinghal.mysaarthi.presentation.onboarding
 
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -21,11 +25,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
+
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.palaksinghal.mysaarthi.R
@@ -40,6 +47,13 @@ fun OnboardingScreen(
 ) {
     val formState by viewModel.formState.collectAsStateWithLifecycle()
     val saveState by viewModel.saveState.collectAsStateWithLifecycle()
+
+    val context= LocalContext.current
+    val locationPermissionLauncher= rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) {  isGranted->
+        viewModel.updateUseLocation(isGranted)
+    }
 
     LaunchedEffect(saveState) {
         if (saveState is OnboardingUiState.Success) {
@@ -290,7 +304,23 @@ fun OnboardingScreen(
                         icon = R.drawable.ic_location,
                         label = "Use my location",
                         checked = formState.useLocation,
-                        onCheckedChange = { viewModel.updateUseLocation(it) }
+                        onCheckedChange = { wantsToEnable->
+                            if(wantsToEnable){
+                               val hasPermission = ContextCompat.checkSelfPermission(
+                                   context,
+                                   Manifest.permission.ACCESS_COARSE_LOCATION
+                               )==PackageManager.PERMISSION_GRANTED
+
+                                if(hasPermission){
+                                    viewModel.updateUseLocation(true)
+                                }else{
+                                    locationPermissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
+                                }
+
+                            }else{
+                                viewModel.updateUseLocation(false)
+                            }
+                        }
                     )
                     ToggleRow(
                         icon = R.drawable.ic_satsang,
