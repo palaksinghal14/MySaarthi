@@ -2,6 +2,8 @@ package com.palaksinghal.mysaarthi.di
 
 import android.content.Context
 import androidx.room.Room
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.palaksinghal.mysaarthi.data.local.dao.SadhanaDao
 import com.palaksinghal.mysaarthi.data.local.dao.ShlokaDao
 import com.palaksinghal.mysaarthi.data.local.dao.UserProfileDao
@@ -49,4 +51,10 @@ object AppModule {
     @Provides
     @Singleton
     fun provideSadhanaDao(database: GitaDatabase): SadhanaDao = database.sadhanaDao()
+
+    @Provides
+    @Singleton
+    fun provideFusedLocationProviderClient(
+        @ApplicationContext context: Context
+    ): FusedLocationProviderClient= LocationServices.getFusedLocationProviderClient(context)
 }
