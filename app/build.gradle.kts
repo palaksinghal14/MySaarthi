@@ -142,4 +142,7 @@ dependencies {
 
     // Kotlin Serialization
     implementation(libs.kotlin.serialization)
+
+    //Lifecycle Process
+    implementation(libs.androidx.lifecycle.process)
 }
