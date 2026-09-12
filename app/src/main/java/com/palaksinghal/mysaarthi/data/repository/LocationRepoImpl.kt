@@ -19,6 +19,7 @@ import com.palaksinghal.mysaarthi.domain.repository.LocationRepository
 import com.palaksinghal.mysaarthi.domain.repository.UserProfileRepo
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withTimeoutOrNull
 import javax.inject.Inject
 
 class LocationRepoImpl @Inject constructor(
@@ -42,7 +43,10 @@ class LocationRepoImpl @Inject constructor(
                    .setPriority(Priority.PRIORITY_BALANCED_POWER_ACCURACY)
                    .build()
 
-               val androidLocation=fusedLocationProviderClient.getCurrentLocation(request,null).await()
+               val androidLocation=
+                   withTimeoutOrNull(15000){
+                       fusedLocationProviderClient.getCurrentLocation(request,null).await()
+                   }
 
                if(androidLocation==null){
                   return Result.failure(AppException.UnknownException("Could not determine location"))
