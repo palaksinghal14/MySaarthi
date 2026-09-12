@@ -4,6 +4,9 @@ import android.content.Context
 import androidx.room.Room
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.net.PlacesClient
+import com.palaksinghal.mysaarthi.BuildConfig
 import com.palaksinghal.mysaarthi.data.local.dao.SadhanaDao
 import com.palaksinghal.mysaarthi.data.local.dao.ShlokaDao
 import com.palaksinghal.mysaarthi.data.local.dao.UserProfileDao
@@ -38,8 +41,6 @@ object AppModule {
         .fallbackToDestructiveMigration(true)
         .build()
 
-
-
     @Provides
     @Singleton
     fun provideShlokaDao(gitaDatabase: GitaDatabase): ShlokaDao =gitaDatabase.shlokaDao()
@@ -57,4 +58,17 @@ object AppModule {
     fun provideFusedLocationProviderClient(
         @ApplicationContext context: Context
     ): FusedLocationProviderClient= LocationServices.getFusedLocationProviderClient(context)
+
+    @Provides
+    @Singleton
+    fun providePlacesClient(
+        @ApplicationContext context: Context
+    ): PlacesClient {
+        if(!Places.isInitialized()){
+            Places.initialize(context, BuildConfig.PLACES_API_KEY)
+        }
+
+        return Places.createClient(context)
+    }
+
 }
