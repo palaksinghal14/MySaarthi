@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.palaksinghal.mysaarthi.data.local.dao.SadhanaDao
 import com.palaksinghal.mysaarthi.domain.model.AppException
 import com.palaksinghal.mysaarthi.domain.model.DailyCompletionRate
+import com.palaksinghal.mysaarthi.domain.model.SatsangRequestStatus
 import com.palaksinghal.mysaarthi.domain.repository.AuthenticationRepo
 import com.palaksinghal.mysaarthi.domain.repository.SatsangRequestRepository
 import com.palaksinghal.mysaarthi.domain.repository.UserProfileRepo
@@ -33,6 +34,7 @@ class YouViewModel @Inject constructor(
         loadStreakData()
         observeIncomingRequests()
         observeOutgoingRequests()
+        observeConnections()
     }
 
     fun observeProfile(){
@@ -43,6 +45,7 @@ class YouViewModel @Inject constructor(
                     it.copy(
                         isLoading = false,
                         displayName = profile?.displayName?:"",
+                        uid = profile?.uid?:"",
                         spiritualIntro = profile?.spiritualIntro ?: "",
                         practices = profile?.practices ?: emptyList(),
                         howLongOnPath = profile?.howLongOnPath ?: "",
@@ -122,7 +125,7 @@ class YouViewModel @Inject constructor(
     fun observeIncomingRequests(){
         viewModelScope.launch {
             satsangRequestRepository.getIncomingSatsangReq().collect { requests ->
-                _uiState.update { it.copy(incomingRequests = requests) }
+                _uiState.update { it.copy(incomingRequests = requests.filter { request -> request.status== SatsangRequestStatus.PENDING }) }
             }
         }
     }
@@ -130,7 +133,7 @@ class YouViewModel @Inject constructor(
     fun observeOutgoingRequests(){
         viewModelScope.launch {
             satsangRequestRepository.getOutgoingSatsangReq().collect { requests ->
-                _uiState.update { it.copy(outgoingRequests = requests) }
+                _uiState.update { it.copy(outgoingRequests = requests.filter { request -> request.status!= SatsangRequestStatus.ACCEPTED }) }
             }
         }
     }
@@ -143,5 +146,13 @@ class YouViewModel @Inject constructor(
 
     suspend fun getContactEmail(uid: String): String {
         return userProfileRepo.getUserProfile(uid).getOrNull()?.email ?: ""
+    }
+
+    private fun observeConnections() {
+        viewModelScope.launch {
+            satsangRequestRepository.getConnectedUsers().collect { connections ->
+                _uiState.update { it.copy(connections = connections) }
+            }
+        }
     }
 }

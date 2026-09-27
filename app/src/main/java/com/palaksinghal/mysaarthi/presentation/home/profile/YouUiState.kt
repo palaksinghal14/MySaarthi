@@ -6,6 +6,7 @@ import com.palaksinghal.mysaarthi.domain.model.SatsangRequest
 data class YouUiState(
     val isLoading: Boolean = true,
     val error: AppException? = null,
+    val uid:String="",
     val displayName: String = "",
     val spiritualIntro: String = "",
     val practices: List<String> = emptyList(),
@@ -16,5 +17,6 @@ data class YouUiState(
     val daysPracticed: Int = 0,
     val last30Days: List<Float> = emptyList(),
     val incomingRequests: List<SatsangRequest> = emptyList(),
-    val outgoingRequests: List<SatsangRequest> = emptyList()
+    val outgoingRequests: List<SatsangRequest> = emptyList(),
+    val connections :List<SatsangRequest> =emptyList()
 )

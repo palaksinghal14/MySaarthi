@@ -38,6 +38,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.palaksinghal.mysaarthi.domain.model.SatsangRequest
 import com.palaksinghal.mysaarthi.domain.model.SatsangRequestStatus
+import com.palaksinghal.mysaarthi.domain.model.otherPerson
 import com.palaksinghal.mysaarthi.presentation.theme.Accent
 import com.palaksinghal.mysaarthi.presentation.theme.Bg
 import com.palaksinghal.mysaarthi.presentation.theme.CaprasimoFamily
@@ -45,12 +46,14 @@ import com.palaksinghal.mysaarthi.presentation.theme.FigtreeFamily
 import com.palaksinghal.mysaarthi.presentation.theme.Neutral300
 import com.palaksinghal.mysaarthi.presentation.theme.Neutral400
 import com.palaksinghal.mysaarthi.presentation.theme.Neutral700
+import com.palaksinghal.mysaarthi.presentation.theme.Sage100
+import com.palaksinghal.mysaarthi.presentation.theme.Sage600
 import com.palaksinghal.mysaarthi.presentation.theme.Surface
 import com.palaksinghal.mysaarthi.presentation.theme.Terracotta100
 import com.palaksinghal.mysaarthi.presentation.theme.Terracotta700
 import com.palaksinghal.mysaarthi.presentation.theme.TextInk
 
-private enum class RequestTab { INCOMING, OUTGOING }
+private enum class RequestTab { INCOMING, OUTGOING,CONNECTED }
 
 @Composable
 fun SatsangRequestsScreen(
@@ -94,6 +97,11 @@ fun SatsangRequestsScreen(
                 isSelected = selectedTab == RequestTab.OUTGOING,
                 onClick = { selectedTab = RequestTab.OUTGOING }
             )
+            TabChip(label="Connected (${uiState.connections.size})",
+                isSelected = selectedTab == RequestTab.CONNECTED,
+                onClick = { selectedTab = RequestTab.CONNECTED }
+            )
+
         }
 
         LazyColumn(
@@ -120,8 +128,20 @@ fun SatsangRequestsScreen(
                     } else {
                         items(uiState.outgoingRequests) { request ->
                             OutgoingRequestCard(
-                                request = request,
-                                getContactEmail = {uid-> viewModel.getContactEmail(uid)}
+                                request = request
+                            )
+                        }
+                    }
+                }
+                RequestTab.CONNECTED -> {
+                    if (uiState.connections.isEmpty()) {
+                        item { EmptyState("No connections yet. Accepted requests will show up here.") }
+                    } else {
+                        items(uiState.connections) { connection ->
+                            ConnectionCard(
+                                connection = connection,
+                                myUid = uiState.uid,
+                                getContactEmail = { uid -> viewModel.getContactEmail(uid) }
                             )
                         }
                     }
@@ -194,15 +214,7 @@ private fun IncomingRequestCard(
 }
 
 @Composable
-private fun OutgoingRequestCard(request: SatsangRequest,  getContactEmail: suspend (String) -> String) {
-
-    var email by remember { mutableStateOf<String?>(null) }
-
-    LaunchedEffect(request.requestId, request.status) {
-        if (request.status == SatsangRequestStatus.ACCEPTED) {
-            email = getContactEmail(request.toUid)
-        }
-    }
+private fun OutgoingRequestCard(request: SatsangRequest) {
 
     val (statusLabel, statusColor) = when (request.status) {
         SatsangRequestStatus.PENDING -> "Pending" to Neutral400
@@ -216,7 +228,7 @@ private fun OutgoingRequestCard(request: SatsangRequest,  getContactEmail: suspe
         color = Surface,
         border = BorderStroke(1.dp, Neutral300)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+
         Row(
             modifier = Modifier.padding(16.dp).fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -237,17 +249,46 @@ private fun OutgoingRequestCard(request: SatsangRequest,  getContactEmail: suspe
                 color = statusColor
             )
         }
+    }
+}
 
-        if (request.status == SatsangRequestStatus.ACCEPTED && !email.isNullOrBlank()) {
-            Spacer(modifier = Modifier.height(8.dp))
+@Composable
+private fun ConnectionCard(
+    connection: SatsangRequest,
+    myUid: String,
+    getContactEmail: suspend (String) -> String
+) {
+    val (otherUid, otherName) = connection.otherPerson(myUid)
+    var email by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(otherUid) {
+        email = getContactEmail(otherUid)
+    }
+
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        color = Sage100,
+        border = BorderStroke(1.dp, Sage600)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Contact: $email",
+                text = otherName,
                 fontFamily = FigtreeFamily,
-                fontWeight = FontWeight.Medium,
-                fontSize = 13.sp,
-                color = Accent
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 15.sp,
+                color = TextInk
             )
-           }
+            if (!email.isNullOrBlank()) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Contact: $email",
+                    fontFamily = FigtreeFamily,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 13.sp,
+                    color = Sage600
+                )
+            }
         }
     }
 }
