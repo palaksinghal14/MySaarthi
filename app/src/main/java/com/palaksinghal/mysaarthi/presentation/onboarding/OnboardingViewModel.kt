@@ -1,6 +1,7 @@
 package com.palaksinghal.mysaarthi.presentation.onboarding
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 import com.palaksinghal.mysaarthi.data.local.datasources.UserPreferencesDataSource
 import com.palaksinghal.mysaarthi.domain.model.AppException
 import com.palaksinghal.mysaarthi.domain.model.PracticeReminder
@@ -40,7 +41,8 @@ data class OnboardingFormState(
 @HiltViewModel
 class OnboardingViewModel @Inject constructor(
     private val userProfileRepo: UserProfileRepo,
-    private val userPreferences: UserPreferencesDataSource
+    private val userPreferences: UserPreferencesDataSource,
+    private val auth: FirebaseAuth
 ) : ViewModel() {
 
     // One StateFlow for the entire form
@@ -161,6 +163,7 @@ class OnboardingViewModel @Inject constructor(
             val userProfile = UserProfile(
                 displayName = form.displayName.trim(),
                 practices = form.selectedPractices,
+                email = auth.currentUser?.email ?: "",
                 howLongOnPath = form.howLongOnPath,
                 isOpenToSatsang = form.isOpenToSatsang,
                 spiritualIntro = form.spiritualIntro.trim(),
