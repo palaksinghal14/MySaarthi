@@ -6,6 +6,7 @@ data class UserProfile(
     val uid: String = "",
     val displayName: String = "",
     val practices: List<String> = emptyList(),
+    val email: String = "",
     val howLongOnPath: String = "",
     @get:PropertyName("openToSatsang")
     @set:PropertyName("openToSatsang")
