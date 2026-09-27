@@ -43,16 +43,24 @@ class LocationRepoImpl @Inject constructor(
                    .setPriority(Priority.PRIORITY_BALANCED_POWER_ACCURACY)
                    .build()
 
-               val androidLocation=
-                   withTimeoutOrNull(15000){
+               val freshLocation=
+                   withTimeoutOrNull(15_000L){
                        fusedLocationProviderClient.getCurrentLocation(request,null).await()
                    }
 
-               if(androidLocation==null){
-                  return Result.failure(AppException.UnknownException("Could not determine location"))
+               if (freshLocation != null) {
+                   return Result.success(Location(freshLocation.latitude, freshLocation.longitude))
                }
 
-               Result.success( Location(androidLocation.latitude,androidLocation.longitude))
+               // Fresh fix failed or timed out — fall back to last known location
+               val lastLocation = fusedLocationProviderClient.lastLocation.await()
+
+               if (lastLocation != null) {
+                   return Result.success(Location(lastLocation.latitude, lastLocation.longitude))
+               }
+
+               // Genuinely no location available at all — only now do we fail
+               Result.failure(AppException.UnknownException("Could not determine location"))
 
            }catch (e: Exception){
                Result.failure(e.toAppException())
