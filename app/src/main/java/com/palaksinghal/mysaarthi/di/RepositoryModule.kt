@@ -4,12 +4,14 @@ import com.palaksinghal.mysaarthi.data.repository.AuthenticationRepoImp
 import com.palaksinghal.mysaarthi.data.repository.LocationRepoImpl
 import com.palaksinghal.mysaarthi.data.repository.NearbyRepositoryImpl
 import com.palaksinghal.mysaarthi.data.repository.SadhanaRepositoryImpl
+import com.palaksinghal.mysaarthi.data.repository.SatsangReqRepoImpl
 import com.palaksinghal.mysaarthi.data.repository.ShlokaRepoImpl
 import com.palaksinghal.mysaarthi.data.repository.UserProfileRepoImpl
 import com.palaksinghal.mysaarthi.domain.repository.AuthenticationRepo
 import com.palaksinghal.mysaarthi.domain.repository.LocationRepository
 import com.palaksinghal.mysaarthi.domain.repository.NearbyRepository
 import com.palaksinghal.mysaarthi.domain.repository.SadhanaRepository
+import com.palaksinghal.mysaarthi.domain.repository.SatsangRequestRepository
 import com.palaksinghal.mysaarthi.domain.repository.ShlokaRepo
 import com.palaksinghal.mysaarthi.domain.repository.UserProfileRepo
 import dagger.Binds
@@ -45,5 +47,9 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindsNearbyRepository(impl: NearbyRepositoryImpl) : NearbyRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindsSatsangReqRepository(impl: SatsangReqRepoImpl) : SatsangRequestRepository
 }
 
