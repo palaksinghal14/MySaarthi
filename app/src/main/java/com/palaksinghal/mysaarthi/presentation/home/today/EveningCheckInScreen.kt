@@ -179,12 +179,6 @@ fun EveningCheckInScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text(
-                text = "Saving coming soon — for now, just reflect.",
-                fontFamily = FigtreeFamily,
-                fontSize = 12.sp,
-                color = Neutral400
-            )
         }
     }
 }

@@ -98,8 +98,13 @@ fun YouScreen(
                         horizontalArrangement = Arrangement.End,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-
-
+                            IconButton(onClick = onNavigateToSatsangRequests) {
+                                Icon(
+                                    imageVector = Icons.Default.Face,
+                                    contentDescription = "Satsang requests",
+                                    tint = Neutral700
+                               )
+                            }
                             IconButton(onClick = onNavigateToEditProfile) {
                                 Icon(
                                     imageVector = Icons.Default.Edit,
@@ -113,13 +118,6 @@ fun YouScreen(
                                     contentDescription = "Settings",
                                     tint = Neutral700
                                 )
-                            }
-                            IconButton(onClick = onNavigateToSatsangRequests) {
-                            Icon(
-                                imageVector = Icons.Default.Face,
-                                contentDescription = "Satsang requests",
-                                tint = Neutral700
-                            )
                             }
 
                     }
