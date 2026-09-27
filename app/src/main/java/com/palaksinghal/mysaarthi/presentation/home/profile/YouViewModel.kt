@@ -140,4 +140,8 @@ class YouViewModel @Inject constructor(
             satsangRequestRepository.respondToRequest(requestId, accept)
         }
     }
+
+    suspend fun getContactEmail(uid: String): String {
+        return userProfileRepo.getUserProfile(uid).getOrNull()?.email ?: ""
+    }
 }

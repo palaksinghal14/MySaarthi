@@ -21,4 +21,5 @@ sealed class ScreenRoutes(val route :String) {
     //routes on profile screen
     object EditProfile : ScreenRoutes("edit_profile")
     object Settings : ScreenRoutes("settings")
+    object SatsangRequests : ScreenRoutes("satsang_requests")
 }

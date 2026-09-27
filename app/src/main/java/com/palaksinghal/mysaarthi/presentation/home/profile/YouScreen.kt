@@ -1,5 +1,6 @@
 package com.palaksinghal.mysaarthi.presentation.home.profile
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -21,7 +22,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -37,6 +41,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.palaksinghal.mysaarthi.domain.model.SatsangRequest
+import com.palaksinghal.mysaarthi.domain.model.SatsangRequestStatus
 import com.palaksinghal.mysaarthi.presentation.theme.Accent
 import com.palaksinghal.mysaarthi.presentation.theme.Bg
 import com.palaksinghal.mysaarthi.presentation.theme.CaprasimoFamily
@@ -57,6 +63,7 @@ import com.palaksinghal.mysaarthi.presentation.theme.TextInk
 fun YouScreen(
     onNavigateToEditProfile: () -> Unit,
     onNavigateToSettings: () -> Unit,
+    onNavigateToSatsangRequests: () -> Unit,
     viewModel: YouViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -106,6 +113,13 @@ fun YouScreen(
                                     contentDescription = "Settings",
                                     tint = Neutral700
                                 )
+                            }
+                            IconButton(onClick = onNavigateToSatsangRequests) {
+                            Icon(
+                                imageVector = Icons.Default.Face,
+                                contentDescription = "Satsang requests",
+                                tint = Neutral700
+                            )
                             }
 
                     }

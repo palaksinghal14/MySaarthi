@@ -20,6 +20,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.palaksinghal.mysaarthi.R
 import com.palaksinghal.mysaarthi.core.navigation.ScreenRoutes
+import com.palaksinghal.mysaarthi.presentation.home.profile.SatsangRequestsScreen
 import com.palaksinghal.mysaarthi.presentation.home.today.EveningCheckInScreen
 import com.palaksinghal.mysaarthi.presentation.home.today.SadhanaDetailScreen
 import com.palaksinghal.mysaarthi.presentation.home.today.ShlokaDetailScreen
@@ -152,7 +153,10 @@ fun HomeShell(
                 },
                 onNavigateToSettings = {
                     tabNavController.navigate(ScreenRoutes.Settings.route)
-                }
+                },
+                    onNavigateToSatsangRequests = {
+                        tabNavController.navigate(ScreenRoutes.SatsangRequests.route)
+                    }
                )
             }
 
@@ -166,6 +170,9 @@ fun HomeShell(
                     onBack = { tabNavController.popBackStack() },
                     onSignOut =  onSignOut
                 )
+            }
+            composable(ScreenRoutes.SatsangRequests.route) {
+                SatsangRequestsScreen(onBack = { tabNavController.popBackStack() })
             }
         }
     }
