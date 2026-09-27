@@ -35,6 +35,7 @@ class SatsangReqRepoImpl @Inject constructor(
                 "fromUid" to fromUid,
                 "fromDisplayName" to displayName,
                 "toUid" to toUid,
+                "toDisplayName" to toDisplayName,
                 "status" to "PENDING",
                 "createdAt" to System.currentTimeMillis()
             )

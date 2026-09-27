@@ -7,6 +7,7 @@ data class SatsangRequest(
     val fromUid: String = "",
     val fromDisplayName: String = "",
     val toUid: String = "",
+    val toDisplayName: String = "",
     val status: SatsangRequestStatus = SatsangRequestStatus.PENDING,
     val createdAt: Long = 0L
 )
