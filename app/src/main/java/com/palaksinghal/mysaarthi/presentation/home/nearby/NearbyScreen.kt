@@ -58,6 +58,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.palaksinghal.mysaarthi.R
 import com.palaksinghal.mysaarthi.domain.model.NearbySeeker
 import com.palaksinghal.mysaarthi.domain.model.NearbyTemple
+import com.palaksinghal.mysaarthi.domain.model.SatsangRequestStatus
 import com.palaksinghal.mysaarthi.presentation.theme.Accent
 import com.palaksinghal.mysaarthi.presentation.theme.Bg
 import com.palaksinghal.mysaarthi.presentation.theme.CaprasimoFamily
@@ -168,6 +169,9 @@ fun NearbyScreen(
                         // Info card overlay — shows on top of the map when something is selected
                         selectedPlace?.let { place ->
                             Box(modifier = Modifier.align(Alignment.BottomCenter).padding(16.dp)) {
+                                val status = (place as? SelectedPlace.Seeker)?.seeker?.uid?.let { uid ->
+                                    uiState.sentRequestStatuses[uid]
+                                }
                                 PlaceInfoCard(
                                     place = place,
                                     onDismiss = { selectedPlace = null },
@@ -184,6 +188,12 @@ fun NearbyScreen(
                                                 "https://www.google.com/maps/dir/?api=1&destination=$lat,$lng"
                                             )
                                             context.startActivity(Intent(Intent.ACTION_VIEW, browserUri))
+                                        }
+                                    },
+                                    requestStatus = status,
+                                    onSendRequest = {
+                                        if (place is SelectedPlace.Seeker) {
+                                            viewModel.sendSatsangRequest(place.seeker.uid, place.seeker.displayName)
                                         }
                                     }
                                 )
@@ -217,7 +227,9 @@ fun NearbyScreen(
 private fun PlaceInfoCard(
     place: SelectedPlace,
     onDismiss: () -> Unit,
-    onGetDirections: (lat: Double, lng: Double) -> Unit
+    onGetDirections: (lat: Double, lng: Double) -> Unit,
+    requestStatus: SatsangRequestStatus?,
+    onSendRequest: () -> Unit
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -250,17 +262,43 @@ private fun PlaceInfoCard(
                 }
             }
 
+            Spacer(modifier = Modifier.height(12.dp))
             // "Get Directions" only makes sense for temples (a real destination)
             // — not for seekers, since we're not sharing exact location for privacy
-            if (place is SelectedPlace.Temple) {
-                Spacer(modifier = Modifier.height(12.dp))
-                Button(
-                    onClick = { onGetDirections(place.temple.lat, place.temple.lng) },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(50),
-                    colors = ButtonDefaults.buttonColors(containerColor = Accent)
-                ) {
-                    Text("Get Directions", fontFamily = FigtreeFamily, fontWeight = FontWeight.SemiBold, color = Bg)
+            when (place) {
+                is SelectedPlace.Temple -> {
+                    Button(
+                        onClick = { onGetDirections(place.temple.lat, place.temple.lng) },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(50),
+                        colors = ButtonDefaults.buttonColors(containerColor = Accent)
+                    ) {
+                        Text("Get Directions", fontFamily = FigtreeFamily, fontWeight = FontWeight.SemiBold, color = Bg)
+                    }
+                }
+                is SelectedPlace.Seeker -> {
+                    val (label, isEnabled) = when (requestStatus) {
+                        null -> "Send satsang request" to true
+                        SatsangRequestStatus.PENDING -> "Requested" to false
+                        SatsangRequestStatus.ACCEPTED -> "Accepted" to false
+                        SatsangRequestStatus.DECLINED -> "Send satsang request" to true
+                    }
+                    Button(
+                        onClick = onSendRequest,
+                        enabled = isEnabled,
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(50),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (isEnabled) Neutral300 else Accent
+                        )
+                    ) {
+                        Text(
+                            text =label,
+                            fontFamily = FigtreeFamily,
+                            fontWeight = FontWeight.SemiBold,
+                            color = if (isEnabled) Bg else Neutral700
+                        )
+                    }
                 }
             }
         }

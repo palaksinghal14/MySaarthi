@@ -90,14 +90,8 @@ class NearbyViewModel @Inject constructor(
     fun observeOutgoingRequests(){
         viewModelScope.launch {
             satsangRequestRepository.getOutgoingSatsangReq().collect { requests ->
-                val uids = requests
-                    .filter {
-                        it.status == SatsangRequestStatus.PENDING ||
-                                it.status == SatsangRequestStatus.ACCEPTED
-                    }
-                    .map { it.toUid }
-                    .toSet()
-                _uiState.update { it.copy(sentRequestUids = uids) }
+                val statusMap = requests.associate { it.toUid to it.status }
+                _uiState.update { it.copy(sentRequestStatuses = statusMap) }
             }
         }
     }
@@ -106,7 +100,8 @@ class NearbyViewModel @Inject constructor(
         viewModelScope.launch {
             satsangRequestRepository.sendSatsangReq(toUid, toDisplayName)
                 .onSuccess {
-                    _uiState.update { it.copy(sentRequestUids = it.sentRequestUids + toUid) }
+                    _uiState.update { it.copy( sentRequestStatuses = it.sentRequestStatuses + (toUid to SatsangRequestStatus.PENDING)
+                    ) }
                 }
         }
     }

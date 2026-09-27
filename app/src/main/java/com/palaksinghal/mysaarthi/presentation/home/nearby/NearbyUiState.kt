@@ -3,6 +3,7 @@ package com.palaksinghal.mysaarthi.presentation.nearby
 import com.palaksinghal.mysaarthi.domain.model.AppException
 import com.palaksinghal.mysaarthi.domain.model.NearbySeeker
 import com.palaksinghal.mysaarthi.domain.model.NearbyTemple
+import com.palaksinghal.mysaarthi.domain.model.SatsangRequestStatus
 
 enum class NearbyFilter { PLACES, SEEKERS }
 
@@ -14,5 +15,5 @@ data class NearbyUiState(
     val selectedFilter: NearbyFilter = NearbyFilter.PLACES,
     val userLat: Double = 0.0,
     val userLng: Double = 0.0,
-    val sentRequestUids: Set<String> = emptySet()
+    val sentRequestStatuses: Map<String, SatsangRequestStatus> = emptyMap()
 )
