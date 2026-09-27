@@ -6,6 +6,7 @@ import com.palaksinghal.mysaarthi.data.local.dao.SadhanaDao
 import com.palaksinghal.mysaarthi.domain.model.AppException
 import com.palaksinghal.mysaarthi.domain.model.DailyCompletionRate
 import com.palaksinghal.mysaarthi.domain.repository.AuthenticationRepo
+import com.palaksinghal.mysaarthi.domain.repository.SatsangRequestRepository
 import com.palaksinghal.mysaarthi.domain.repository.UserProfileRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
@@ -20,7 +21,8 @@ import javax.inject.Inject
 class YouViewModel @Inject constructor(
     private val authRepo: AuthenticationRepo,
     private val userProfileRepo: UserProfileRepo,
-    private val sadhanaDao: SadhanaDao
+    private val sadhanaDao: SadhanaDao,
+    private val satsangRequestRepository: SatsangRequestRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(YouUiState())
@@ -29,6 +31,8 @@ class YouViewModel @Inject constructor(
     init {
         observeProfile()
         loadStreakData()
+        observeIncomingRequests()
+        observeOutgoingRequests()
     }
 
     fun observeProfile(){
@@ -112,6 +116,28 @@ class YouViewModel @Inject constructor(
         return (29 downTo 0).map { daysAgo ->
             val date = today.minusDays(daysAgo.toLong()).toString()
             ratioByDate[date] ?: 0f
+        }
+    }
+
+    fun observeIncomingRequests(){
+        viewModelScope.launch {
+            satsangRequestRepository.getIncomingSatsangReq().collect { requests ->
+                _uiState.update { it.copy(incomingRequests = requests) }
+            }
+        }
+    }
+
+    fun observeOutgoingRequests(){
+        viewModelScope.launch {
+            satsangRequestRepository.getOutgoingSatsangReq().collect { requests ->
+                _uiState.update { it.copy(outgoingRequests = requests) }
+            }
+        }
+    }
+
+    fun respondToRequest(requestId: String, accept: Boolean){
+        viewModelScope.launch {
+            satsangRequestRepository.respondToRequest(requestId, accept)
         }
     }
 }

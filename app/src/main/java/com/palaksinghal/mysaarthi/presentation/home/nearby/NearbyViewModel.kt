@@ -4,8 +4,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.palaksinghal.mysaarthi.domain.model.AppException
+import com.palaksinghal.mysaarthi.domain.model.SatsangRequestStatus
 import com.palaksinghal.mysaarthi.domain.repository.LocationRepository
 import com.palaksinghal.mysaarthi.domain.repository.NearbyRepository
+import com.palaksinghal.mysaarthi.domain.repository.SatsangRequestRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +21,8 @@ private const val DEFAULT_RADIUS_KM = 10.0
 @HiltViewModel
 class NearbyViewModel @Inject constructor(
     private val nearbyRepository: NearbyRepository,
-    private val locationRepository: LocationRepository
+    private val locationRepository: LocationRepository,
+    private val satsangRequestRepository: SatsangRequestRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(NearbyUiState())
@@ -27,6 +30,7 @@ class NearbyViewModel @Inject constructor(
 
     init {
         loadNearbyData()
+        observeOutgoingRequests()
     }
 
     fun loadNearbyData() {
@@ -81,5 +85,29 @@ class NearbyViewModel @Inject constructor(
 
     fun retry() {
         loadNearbyData()
+    }
+
+    fun observeOutgoingRequests(){
+        viewModelScope.launch {
+            satsangRequestRepository.getOutgoingSatsangReq().collect { requests ->
+                val uids = requests
+                    .filter {
+                        it.status == SatsangRequestStatus.PENDING ||
+                                it.status == SatsangRequestStatus.ACCEPTED
+                    }
+                    .map { it.toUid }
+                    .toSet()
+                _uiState.update { it.copy(sentRequestUids = uids) }
+            }
+        }
+    }
+
+    fun sendSatsangRequest(toUid: String, toDisplayName: String) {
+        viewModelScope.launch {
+            satsangRequestRepository.sendSatsangReq(toUid, toDisplayName)
+                .onSuccess {
+                    _uiState.update { it.copy(sentRequestUids = it.sentRequestUids + toUid) }
+                }
+        }
     }
 }

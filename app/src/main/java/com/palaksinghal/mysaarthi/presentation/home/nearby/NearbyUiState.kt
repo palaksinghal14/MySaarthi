@@ -13,5 +13,6 @@ data class NearbyUiState(
     val error: AppException? = null,
     val selectedFilter: NearbyFilter = NearbyFilter.PLACES,
     val userLat: Double = 0.0,
-    val userLng: Double = 0.0
+    val userLng: Double = 0.0,
+    val sentRequestUids: Set<String> = emptySet()
 )

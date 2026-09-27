@@ -1,6 +1,7 @@
 package com.palaksinghal.mysaarthi.presentation.home.profile
 
 import com.palaksinghal.mysaarthi.domain.model.AppException
+import com.palaksinghal.mysaarthi.domain.model.SatsangRequest
 
 data class YouUiState(
     val isLoading: Boolean = true,
@@ -13,5 +14,7 @@ data class YouUiState(
     val currentStreak: Int = 0,
     val longestStreak: Int = 0,
     val daysPracticed: Int = 0,
-    val last30Days: List<Float> = emptyList()
+    val last30Days: List<Float> = emptyList(),
+    val incomingRequests: List<SatsangRequest> = emptyList(),
+    val outgoingRequests: List<SatsangRequest> = emptyList()
 )
