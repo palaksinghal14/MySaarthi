@@ -114,4 +114,52 @@ class SatsangReqRepoImpl @Inject constructor(
         }
     }
 
+    override fun getConnectedUsers(): Flow<List<SatsangRequest>> = callbackFlow {
+        val currentUid = auth.getCurrentUserId() ?: run {
+            close()
+            return@callbackFlow
+        }
+
+        // Track both listeners' latest results separately, merge on every update
+        var fromResults = listOf<SatsangRequest>()
+        var toResults = listOf<SatsangRequest>()
+
+        fun emitMerged() {
+            trySend(fromResults + toResults)
+        }
+
+        val fromListener = firestore.collection("satsang_requests")
+            .whereEqualTo("fromUid", currentUid)
+            .whereEqualTo("status", "ACCEPTED")
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+                fromResults = snapshot?.documents?.mapNotNull { doc ->
+                    doc.toObject(SatsangRequest::class.java)?.copy(requestId = doc.id)
+                } ?: emptyList()
+                emitMerged()
+            }
+
+        val toListener = firestore.collection("satsang_requests")
+            .whereEqualTo("toUid", currentUid)
+            .whereEqualTo("status", "ACCEPTED")
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+                toResults = snapshot?.documents?.mapNotNull { doc ->
+                    doc.toObject(SatsangRequest::class.java)?.copy(requestId = doc.id)
+                } ?: emptyList()
+                emitMerged()
+            }
+
+        awaitClose {
+            fromListener.remove()
+            toListener.remove()
+        }
+    }
+
 }
