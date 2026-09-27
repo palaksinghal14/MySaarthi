@@ -170,7 +170,7 @@ fun NearbyScreen(
                         selectedPlace?.let { place ->
                             Box(modifier = Modifier.align(Alignment.BottomCenter).padding(16.dp)) {
                                 val status = (place as? SelectedPlace.Seeker)?.seeker?.uid?.let { uid ->
-                                    uiState.sentRequestStatuses[uid]
+                                    uiState.seekerConnectionStates[uid]
                                 }
                                 PlaceInfoCard(
                                     place = place,
@@ -228,7 +228,7 @@ private fun PlaceInfoCard(
     place: SelectedPlace,
     onDismiss: () -> Unit,
     onGetDirections: (lat: Double, lng: Double) -> Unit,
-    requestStatus: SatsangRequestStatus?,
+    requestStatus: SeekerConnectionState??,
     onSendRequest: () -> Unit
 ) {
     Surface(
@@ -277,11 +277,12 @@ private fun PlaceInfoCard(
                     }
                 }
                 is SelectedPlace.Seeker -> {
-                    val (label, isEnabled) = when (requestStatus) {
-                        null -> "Send satsang request" to true
-                        SatsangRequestStatus.PENDING -> "Requested" to false
-                        SatsangRequestStatus.ACCEPTED -> "Accepted" to false
-                        SatsangRequestStatus.DECLINED -> "Send satsang request" to true
+                    val state = requestStatus
+                    val (label, isEnabled) = when (state) {
+                        null , SeekerConnectionState.NONE, SeekerConnectionState.DECLINED-> "Send satsang request" to true
+                        SeekerConnectionState.PENDING -> "Requested" to false
+                        SeekerConnectionState.CONNECTED -> "Accepted" to false
+
                     }
                     Button(
                         onClick = onSendRequest,
@@ -289,7 +290,7 @@ private fun PlaceInfoCard(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(50),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (isEnabled) Neutral300 else Accent
+                            containerColor = if (isEnabled) Accent else Neutral300
                         )
                     ) {
                         Text(

@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.palaksinghal.mysaarthi.domain.model.AppException
 import com.palaksinghal.mysaarthi.domain.model.SatsangRequestStatus
+import com.palaksinghal.mysaarthi.domain.model.otherPerson
+import com.palaksinghal.mysaarthi.domain.repository.AuthenticationRepo
 import com.palaksinghal.mysaarthi.domain.repository.LocationRepository
 import com.palaksinghal.mysaarthi.domain.repository.NearbyRepository
 import com.palaksinghal.mysaarthi.domain.repository.SatsangRequestRepository
@@ -12,6 +14,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,7 +25,8 @@ private const val DEFAULT_RADIUS_KM = 10.0
 class NearbyViewModel @Inject constructor(
     private val nearbyRepository: NearbyRepository,
     private val locationRepository: LocationRepository,
-    private val satsangRequestRepository: SatsangRequestRepository
+    private val satsangRequestRepository: SatsangRequestRepository,
+    private val authRepo : AuthenticationRepo
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(NearbyUiState())
@@ -30,7 +34,7 @@ class NearbyViewModel @Inject constructor(
 
     init {
         loadNearbyData()
-        observeOutgoingRequests()
+        observeConnectionStates()
     }
 
     fun loadNearbyData() {
@@ -87,11 +91,33 @@ class NearbyViewModel @Inject constructor(
         loadNearbyData()
     }
 
-    fun observeOutgoingRequests(){
+    private fun observeConnectionStates() {
         viewModelScope.launch {
-            satsangRequestRepository.getOutgoingSatsangReq().collect { requests ->
-                val statusMap = requests.associate { it.toUid to it.status }
-                _uiState.update { it.copy(sentRequestStatuses = statusMap) }
+            val myUid = authRepo.getCurrentUserId() ?: return@launch // inject AuthenticationRepo if not already present
+
+            // Combine outgoing requests + connections into one state map
+            combine(
+                satsangRequestRepository.getOutgoingSatsangReq(),
+                satsangRequestRepository.getConnectedUsers()
+            ) { outgoing, connected ->
+                val stateMap = mutableMapOf<String, SeekerConnectionState>()
+
+                outgoing.forEach { req ->
+                    stateMap[req.toUid] = when (req.status) {
+                        SatsangRequestStatus.PENDING -> SeekerConnectionState.PENDING
+                        SatsangRequestStatus.DECLINED -> SeekerConnectionState.DECLINED
+                        SatsangRequestStatus.ACCEPTED -> SeekerConnectionState.CONNECTED
+                    }
+                }
+
+                connected.forEach { conn ->
+                    val (otherUid, _) = conn.otherPerson(myUid)
+                    stateMap[otherUid] = SeekerConnectionState.CONNECTED
+                }
+
+                stateMap
+            }.collect { stateMap ->
+                _uiState.update { it.copy(seekerConnectionStates = stateMap) }
             }
         }
     }
@@ -100,7 +126,7 @@ class NearbyViewModel @Inject constructor(
         viewModelScope.launch {
             satsangRequestRepository.sendSatsangReq(toUid, toDisplayName)
                 .onSuccess {
-                    _uiState.update { it.copy( sentRequestStatuses = it.sentRequestStatuses + (toUid to SatsangRequestStatus.PENDING)
+                    _uiState.update { it.copy(  seekerConnectionStates = it.seekerConnectionStates + (toUid to SeekerConnectionState.PENDING)
                     ) }
                 }
         }

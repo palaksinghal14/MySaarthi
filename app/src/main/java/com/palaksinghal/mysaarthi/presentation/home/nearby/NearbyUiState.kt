@@ -6,6 +6,7 @@ import com.palaksinghal.mysaarthi.domain.model.NearbyTemple
 import com.palaksinghal.mysaarthi.domain.model.SatsangRequestStatus
 
 enum class NearbyFilter { PLACES, SEEKERS }
+enum class SeekerConnectionState { NONE, PENDING, CONNECTED, DECLINED }
 
 data class NearbyUiState(
     val isLoading: Boolean = true,
@@ -15,5 +16,5 @@ data class NearbyUiState(
     val selectedFilter: NearbyFilter = NearbyFilter.PLACES,
     val userLat: Double = 0.0,
     val userLng: Double = 0.0,
-    val sentRequestStatuses: Map<String, SatsangRequestStatus> = emptyMap()
+    val seekerConnectionStates: Map<String, SeekerConnectionState> = emptyMap()
 )
