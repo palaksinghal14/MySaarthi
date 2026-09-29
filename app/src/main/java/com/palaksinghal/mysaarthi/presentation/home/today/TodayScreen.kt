@@ -141,10 +141,15 @@ fun TodayScreen(
                         )
                     }
 
+                    EveningCheckInCard(onEveningCheckInClick)
+
+                    /*
                     // Evening check-in — only shows after 6 PM
                     if (uiState.isEvening) {
                        EveningCheckInCard(onEveningCheckInClick)
                     }
+
+                     */
 
                     Spacer(modifier = Modifier.height(16.dp))
                 }
