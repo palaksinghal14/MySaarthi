@@ -87,18 +87,15 @@ fun RegisterScreen(
                 .padding(horizontal = 24.dp, vertical = 48.dp),
             verticalArrangement = Arrangement.spacedBy(0.dp)
         ) {
-            // Step indicator
-            Text(
-                text = "STEP 1 OF 6 · SIGN UP",
-                fontFamily = FigtreeFamily,
-                fontWeight = FontWeight.Medium,
-                fontSize = 11.sp,
-                color = Accent,
-                letterSpacing = 1.sp
+
+            Icon(
+                painter = painterResource(id = R.drawable.ic_mysaarthi_logo),
+                contentDescription = "MySaarthi logo",
+                tint = Color.Unspecified,
+                modifier = Modifier.size(56.dp)
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
-
+            Spacer(modifier = Modifier.height(24.dp))
             // Headline
             Text(
                 text = "Create your account",
@@ -191,50 +188,6 @@ fun RegisterScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Divider
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                HorizontalDivider(modifier = Modifier.weight(1f), color = Neutral300)
-                Text(
-                    text = "  or with Google  ",
-                    fontFamily = FigtreeFamily,
-                    fontSize = 12.sp,
-                    color = Neutral400
-                )
-                HorizontalDivider(modifier = Modifier.weight(1f), color = Neutral300)
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Google button
-            OutlinedButton(
-                onClick = { /* TODO: Google Sign-In */ },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(52.dp),
-                shape = RoundedCornerShape(50),
-                colors = ButtonDefaults.outlinedButtonColors(containerColor = Surface),
-                border = androidx.compose.foundation.BorderStroke(1.dp, Neutral300)
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_google),
-                    contentDescription = "Google",
-                    tint = Color.Unspecified,
-                    modifier = Modifier.size(50.dp)
-                )
-                Spacer(modifier = Modifier.width(10.dp))
-                Text(
-                    text = "Continue with Google",
-                    fontFamily = FigtreeFamily,
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 15.sp,
-                    color = TextInk
-                )
-            }
 
             Spacer(modifier = Modifier.height(32.dp))
 
