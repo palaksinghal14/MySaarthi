@@ -18,15 +18,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltAndroidApp
-class MySaarthiApplication : Application() , Configuration.Provider{
-
-    @Inject
-    lateinit var workerFactory: HiltWorkerFactory
-
-    override val workManagerConfiguration: Configuration
-        get() = Configuration.Builder()
-            .setWorkerFactory(workerFactory)
-            .build()
+class MySaarthiApplication : Application(){
 
     override fun onCreate() {
         super.onCreate()

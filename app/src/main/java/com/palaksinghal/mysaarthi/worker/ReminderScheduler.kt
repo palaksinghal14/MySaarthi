@@ -1,56 +1,53 @@
 package com.palaksinghal.mysaarthi.worker
 
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.Context
-import androidx.hilt.work.HiltWorker
-import androidx.work.Data
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
+import android.content.Intent
 import com.palaksinghal.mysaarthi.domain.model.PracticeReminder
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.LocalTime
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
-
-private const val REMINDER_TAG = "sadhana_reminder"
 
 @Singleton
 class ReminderScheduler @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
 
-    // Schedules a single practice's reminder — used both for the very first
-    // scheduling (onboarding/edit profile) and for the daily self-reschedule
-    // that ReminderWorker triggers after each run
     fun scheduleReminder(practice: String, hour: Int, minute: Int, amPm: String) {
+        android.util.Log.d("AlarmDebug", "Scheduling '$practice' (requestCode=${practice.hashCode()}) for $hour:$minute $amPm")
         val delayMillis = calculateDelayMillis(hour, minute, amPm)
+        val triggerAtMillis = System.currentTimeMillis() + delayMillis
 
-        val inputData = Data.Builder()
-            .putString(ReminderWorker.KEY_PRACTICE, practice)
-            .putInt(ReminderWorker.KEY_HOUR, hour)
-            .putInt(ReminderWorker.KEY_MINUTE, minute)
-            .putString(ReminderWorker.KEY_AM_PM, amPm)
-            .build()
+        val intent = Intent(context, ReminderAlarmReceiver::class.java).apply {
+            putExtra(ReminderAlarmReceiver.KEY_PRACTICE, practice)
+            putExtra(ReminderAlarmReceiver.KEY_HOUR, hour)
+            putExtra(ReminderAlarmReceiver.KEY_MINUTE, minute)
+            putExtra(ReminderAlarmReceiver.KEY_AM_PM, amPm)
+        }
 
-        val workRequest = OneTimeWorkRequestBuilder<ReminderWorker>()
-            .setInitialDelay(delayMillis, TimeUnit.MILLISECONDS)
-            .setInputData(inputData)
-            .addTag(REMINDER_TAG)
-            .build()
+        // Unique request code per practice — same purpose as WorkManager's
+        // unique work name: re-scheduling replaces this exact alarm, not a duplicate
+        val requestCode = practice.hashCode()
 
-        // Unique name per practice — re-scheduling the same practice
-        // replaces its previous pending request instead of stacking a duplicate
-        val uniqueName = "reminder_$practice"
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            requestCode,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
 
-        WorkManager.getInstance(context)
-            .enqueueUniqueWork(uniqueName, ExistingWorkPolicy.REPLACE, workRequest)
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.setExactAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP,
+            triggerAtMillis,
+            pendingIntent
+        )
     }
 
-    // Schedules every enabled reminder from a user's full list at once —
-    // called right after onboarding completes, and after Edit Profile saves
     fun scheduleAllReminders(reminders: List<PracticeReminder>) {
         reminders
             .filter { it.isEnabled }
@@ -59,17 +56,28 @@ class ReminderScheduler @Inject constructor(
             }
     }
 
-    // Cancels every scheduled reminder — useful if reminders are disabled
-    // entirely, or before re-scheduling a fresh full set from Edit Profile
-    fun cancelAllReminders() {
-        WorkManager.getInstance(context).cancelAllWorkByTag(REMINDER_TAG)
+    fun cancelReminder(practice: String) {
+        android.util.Log.d("AlarmDebug", "Cancelling '$practice' (requestCode=${practice.hashCode()})")
+        val intent = Intent(context, ReminderAlarmReceiver::class.java)
+        val requestCode = practice.hashCode()
+
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            requestCode,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.cancel(pendingIntent)
     }
 
-    // Converts 12-hour + AM/PM into the exact delay (in milliseconds) until
-    // that clock time next occurs — today if it hasn't passed yet, else tomorrow
+    fun cancelAllReminders(practices: List<String>) {
+        practices.forEach { cancelReminder(it) }
+    }
+
     private fun calculateDelayMillis(hour: Int, minute: Int, amPm: String): Long {
         val hour24 = to24Hour(hour, amPm)
-
         val now = LocalDateTime.now()
         var target = now.toLocalDate().atTime(LocalTime.of(hour24, minute))
 
@@ -77,14 +85,9 @@ class ReminderScheduler @Inject constructor(
             target = target.plusDays(1)
         }
 
-        val delay = Duration.between(now, target).toMillis()
-        android.util.Log.d("ReminderDebug", "now=$now, target=$target, delayMillis=$delay (~${delay / 60000} minutes)")
-        return delay
-
+        return Duration.between(now, target).toMillis()
     }
 
-    // Handles the classic 12-hour clock edge cases: 12 AM = hour 0,
-    // 12 PM = hour 12, everything else just shifts by 12 for PM
     private fun to24Hour(hour: Int, amPm: String): Int {
         return when {
             amPm.equals("AM", ignoreCase = true) && hour == 12 -> 0

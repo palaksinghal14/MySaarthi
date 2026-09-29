@@ -118,8 +118,8 @@ class EditProfileViewModel @Inject constructor(
             val updated = current.practiceReminders.map { reminder ->
                 if (reminder["practice"] == practice) {
                     reminder.toMutableMap().apply {
-                        this["hour"] = hour
-                        this["minute"] = minute
+                        this["hour"] = hour.toLong()
+                        this["minute"] = minute.toLong()
                         this["amPm"] = amPm
                     }
                 } else reminder
@@ -160,7 +160,7 @@ class EditProfileViewModel @Inject constructor(
                 .onSuccess {
 
                     // Convert List<Map<String, Any>> → List<PracticeReminder>
-                    // before handing it to the scheduler, which needs the typed model
+                    val oldPractices = profile.practices
 
                     val typedReminders = state.practiceReminders.map { map ->
                         PracticeReminder(
@@ -171,9 +171,11 @@ class EditProfileViewModel @Inject constructor(
                             isEnabled = map["isEnabled"] as? Boolean ?: true
                         )
                     }
-                    // Cancel old schedule first, then set fresh ones —
+                    android.util.Log.d("AlarmDebug", "oldPractices = $oldPractices")
+                    android.util.Log.d("AlarmDebug", "new typedReminders = $typedReminders")
+                    // Cancel old ones first, then set fresh ones —
                     // handles practices being removed, added, or times changed
-                    reminderScheduler.cancelAllReminders()
+                    reminderScheduler.cancelAllReminders(oldPractices)
                     reminderScheduler.scheduleAllReminders(typedReminders)
 
                     _uiState.update { it.copy(isSaving = false, saveSuccess = true) }
@@ -201,8 +203,8 @@ private fun defaultReminderFor(practice: String): Map<String, Any> {
     }
     return mapOf(
         "practice" to practice,
-        "hour" to hour,
-        "minute" to minute,
+        "hour" to hour.toLong(),
+        "minute" to minute.toLong(),
         "amPm" to amPm,
         "isEnabled" to true
     )
