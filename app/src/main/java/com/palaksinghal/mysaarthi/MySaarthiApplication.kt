@@ -1,10 +1,12 @@
 package com.palaksinghal.mysaarthi
 
 import android.app.Application
+import androidx.hilt.work.HiltWorkerFactory
 import dagger.hilt.android.HiltAndroidApp
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.work.Configuration
 import com.palaksinghal.mysaarthi.domain.repository.LocationRepository
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
@@ -13,9 +15,18 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltAndroidApp
-class MySaarthiApplication : Application(){
+class MySaarthiApplication : Application() , Configuration.Provider{
+
+    @Inject
+    lateinit var workerFactory: HiltWorkerFactory
+
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder()
+            .setWorkerFactory(workerFactory)
+            .build()
 
     override fun onCreate() {
         super.onCreate()

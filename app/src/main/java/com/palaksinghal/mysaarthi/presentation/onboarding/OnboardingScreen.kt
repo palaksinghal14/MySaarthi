@@ -2,6 +2,7 @@ package com.palaksinghal.mysaarthi.presentation.onboarding
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateColorAsState
@@ -55,11 +56,28 @@ fun OnboardingScreen(
         viewModel.updateUseLocation(isGranted)
     }
 
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { /* granted or not — reminders will simply be silent if denied, no state to track */ }
+
+    LaunchedEffect(Unit) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val hasPermission = ContextCompat.checkSelfPermission(
+                context, Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+
+            if (!hasPermission) {
+                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
     LaunchedEffect(saveState) {
         if (saveState is OnboardingUiState.Success) {
             viewModel.resetSaveState()
             onOnboardingComplete()
         }
+
     }
 
     Box(modifier = Modifier.fillMaxSize().background(Bg)) {

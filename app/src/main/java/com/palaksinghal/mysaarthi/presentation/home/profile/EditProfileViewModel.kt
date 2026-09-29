@@ -3,9 +3,11 @@ package com.palaksinghal.mysaarthi.presentation.home.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.palaksinghal.mysaarthi.domain.model.AppException
+import com.palaksinghal.mysaarthi.domain.model.PracticeReminder
 import com.palaksinghal.mysaarthi.domain.model.UserProfile
 import com.palaksinghal.mysaarthi.domain.repository.AuthenticationRepo
 import com.palaksinghal.mysaarthi.domain.repository.UserProfileRepo
+import com.palaksinghal.mysaarthi.worker.ReminderScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,7 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class EditProfileViewModel @Inject constructor(
     private val authRepo: AuthenticationRepo,
-    private val userProfileRepo: UserProfileRepo
+    private val userProfileRepo: UserProfileRepo,
+    private val reminderScheduler: ReminderScheduler
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(EditProfileUiState())
@@ -155,6 +158,24 @@ class EditProfileViewModel @Inject constructor(
 
             userProfileRepo.saveUserProfile(updatedProfile)
                 .onSuccess {
+
+                    // Convert List<Map<String, Any>> → List<PracticeReminder>
+                    // before handing it to the scheduler, which needs the typed model
+
+                    val typedReminders = state.practiceReminders.map { map ->
+                        PracticeReminder(
+                            practice = map["practice"] as? String ?: "",
+                            hour = (map["hour"] as? Long)?.toInt() ?: 7,
+                            minute = (map["minute"] as? Long)?.toInt() ?: 0,
+                            amPm = map["amPm"] as? String ?: "AM",
+                            isEnabled = map["isEnabled"] as? Boolean ?: true
+                        )
+                    }
+                    // Cancel old schedule first, then set fresh ones —
+                    // handles practices being removed, added, or times changed
+                    reminderScheduler.cancelAllReminders()
+                    reminderScheduler.scheduleAllReminders(typedReminders)
+
                     _uiState.update { it.copy(isSaving = false, saveSuccess = true) }
                 }
                 .onFailure { throwable ->

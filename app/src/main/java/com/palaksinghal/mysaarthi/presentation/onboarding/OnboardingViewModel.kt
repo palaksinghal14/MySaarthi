@@ -7,6 +7,7 @@ import com.palaksinghal.mysaarthi.domain.model.AppException
 import com.palaksinghal.mysaarthi.domain.model.PracticeReminder
 import com.palaksinghal.mysaarthi.domain.model.UserProfile
 import com.palaksinghal.mysaarthi.domain.repository.UserProfileRepo
+import com.palaksinghal.mysaarthi.worker.ReminderScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -42,7 +43,8 @@ data class OnboardingFormState(
 class OnboardingViewModel @Inject constructor(
     private val userProfileRepo: UserProfileRepo,
     private val userPreferences: UserPreferencesDataSource,
-    private val auth: FirebaseAuth
+    private val auth: FirebaseAuth,
+    private val reminderScheduler: ReminderScheduler
 ) : ViewModel() {
 
     // One StateFlow for the entire form
@@ -175,6 +177,7 @@ class OnboardingViewModel @Inject constructor(
                 .onSuccess {
                     // Save reminder time to DataStore after Firestore succeeds
                     userPreferences.savePracticeReminders(form.practiceReminders)
+                    reminderScheduler.scheduleAllReminders(form.practiceReminders)
                     _saveState.value = OnboardingUiState.Success
                 }
                 .onFailure { throwable ->
