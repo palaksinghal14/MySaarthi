@@ -59,7 +59,7 @@ fun MySaarthiApp(){
              HomeShell(
                  onSignOut = {
                      mainNavController.navigate(ScreenRoutes.Welcome.route){
-                         popUpTo(0){inclusive=true}
+                         popUpTo(mainNavController.graph.id){inclusive=true}
                      }
                  }
              )
