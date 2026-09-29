@@ -21,9 +21,18 @@ fun MySaarthiApp(){
     NavHost(navController = mainNavController , startDestination = ScreenRoutes.Splash.route){
         composable(route= ScreenRoutes.Splash.route){
             SplashScreen(
-                onNavToWelcomeScreen = { mainNavController.navigate(ScreenRoutes.Welcome.route) },
-                onNavToOnboardingScreen = { mainNavController.navigate(ScreenRoutes.Onboarding.route) },
-                onNavToHomeScreen ={ mainNavController.navigate(ScreenRoutes.Home.route) }
+                onNavToWelcomeScreen = {
+                     mainNavController.navigate(ScreenRoutes.Welcome.route){
+                        popUpTo(ScreenRoutes.Splash.route) { inclusive = true }
+                     } },
+                onNavToOnboardingScreen = {
+                    mainNavController.navigate(ScreenRoutes.Onboarding.route){
+                    popUpTo(ScreenRoutes.Splash.route) { inclusive = true }
+                } },
+                onNavToHomeScreen ={
+                    mainNavController.navigate(ScreenRoutes.Home.route) {
+                        popUpTo(ScreenRoutes.Splash.route) { inclusive = true }
+                    }}
             )
         }
         composable(route= ScreenRoutes.Welcome.route){
@@ -36,13 +45,23 @@ fun MySaarthiApp(){
             LoginScreen(
                 onLoginSuccessGoHome ={ mainNavController.navigate(ScreenRoutes.Home.route) },
                 onLoginSuccessGoOnboarding = {mainNavController.navigate(ScreenRoutes.Onboarding.route)},
-                onNavigateToRegister = {mainNavController.navigate(ScreenRoutes.Register.route)}
+                onNavigateToRegister = {
+                    mainNavController.navigate(ScreenRoutes.Register.route) {
+                        popUpTo(ScreenRoutes.Login.route) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
             )
         }
         composable(route= ScreenRoutes.Register.route){
             RegisterScreen(
                 onRegisterSuccess = {mainNavController.navigate(ScreenRoutes.Onboarding.route)},
-                onNavigateToLogin = {mainNavController.navigate(ScreenRoutes.Login.route)}
+                onNavigateToLogin = {
+                    mainNavController.navigate(ScreenRoutes.Login.route){
+                        popUpTo(ScreenRoutes.Register.route) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
             )
         }
         composable(route= ScreenRoutes.Onboarding.route){
