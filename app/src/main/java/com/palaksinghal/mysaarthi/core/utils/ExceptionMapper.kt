@@ -1,5 +1,8 @@
 package com.palaksinghal.mysaarthi.core.utils
+import android.content.Context
 import android.database.sqlite.SQLiteException
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
@@ -12,7 +15,20 @@ import retrofit2.HttpException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
-fun Throwable.toAppException() : AppException{
+
+fun isNetworkAvailable(context: Context): Boolean {
+    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val network = connectivityManager.activeNetwork ?: return false
+    val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+    return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+}
+fun Throwable.toAppException(context: Context? = null) : AppException{
+    // Check actual device connectivity first — this catches every network
+    // failure regardless of how the specific SDK happened to wrap it
+    if (context != null && !isNetworkAvailable(context)) {
+        return AppException.NoInternetException
+    }
+
     return when(this){
         // Network
         is UnknownHostException -> AppException.NoInternetException

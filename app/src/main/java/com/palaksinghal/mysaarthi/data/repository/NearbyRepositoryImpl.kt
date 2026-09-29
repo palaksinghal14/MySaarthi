@@ -1,5 +1,6 @@
 package com.palaksinghal.mysaarthi.data.repository
 
+import android.content.Context
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.model.CircularBounds
 import com.google.android.libraries.places.api.model.Place
@@ -17,8 +18,10 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import com.firebase.geofire.GeoFireUtils
 import com.firebase.geofire.GeoLocation
+import dagger.hilt.android.qualifiers.ApplicationContext
 
 class NearbyRepositoryImpl @Inject constructor(
+    @ApplicationContext val context: Context,
     private val placesClient: PlacesClient,
     private val firestore: FirebaseFirestore,
     private val locationRepository: LocationRepository,
@@ -93,7 +96,7 @@ class NearbyRepositoryImpl @Inject constructor(
 
             Result.success(seekers.sortedBy { it.distanceKm })
         } catch (e: Exception) {
-            Result.failure(e.toAppException())
+            Result.failure(e.toAppException(context))
         }
     }
 
@@ -148,7 +151,7 @@ class NearbyRepositoryImpl @Inject constructor(
                 android.util.Log.e("NearbyTemples", "Status code: ${e.statusCode}")
                 android.util.Log.e("NearbyTemples", "Status message: ${e.status.statusMessage}")
             }
-            Result.failure(e.toAppException())
+            Result.failure(e.toAppException(context))
 
         }
     }

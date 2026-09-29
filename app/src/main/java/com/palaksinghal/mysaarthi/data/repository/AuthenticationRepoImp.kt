@@ -1,15 +1,18 @@
 package com.palaksinghal.mysaarthi.data.repository
 
+import android.content.Context
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.palaksinghal.mysaarthi.core.utils.toAppException
 import com.palaksinghal.mysaarthi.domain.model.AppException
 import com.palaksinghal.mysaarthi.domain.model.User
 import com.palaksinghal.mysaarthi.domain.repository.AuthenticationRepo
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class AuthenticationRepoImp @Inject constructor(
+    @ApplicationContext val context: Context,
     private val auth: FirebaseAuth
 ) : AuthenticationRepo{
 
@@ -27,7 +30,7 @@ class AuthenticationRepoImp @Inject constructor(
             val user= result.user?:return Result.failure(AppException.UserNotFoundException)
             Result.success(user.toDomainUser())
         }catch (e:Exception){
-            Result.failure(e.toAppException())
+            Result.failure(e.toAppException(context))
         }
     }
 
@@ -41,7 +44,7 @@ class AuthenticationRepoImp @Inject constructor(
             val user= result.user?:return Result.failure(AppException.UnknownException("No user returned"))
             Result.success(user.toDomainUser())
         }catch (e:Exception){
-            Result.failure(e.toAppException())
+            Result.failure(e.toAppException(context))
         }
     }
 
