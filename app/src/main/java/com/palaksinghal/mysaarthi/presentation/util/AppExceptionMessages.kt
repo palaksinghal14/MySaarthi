@@ -26,4 +26,5 @@ fun AppException.toUserMessage():String = when(this){
     is AppException.UnknownException -> this.originalMessage ?: stringResource(R.string.error_unknown)
     is AppException.EmptyFieldsException -> stringResource(R.string.error_empty_fields)
     is AppException.InvalidEmailFormatException -> stringResource(R.string.error_invalid_email)
+    is AppException.OnboardingIncompleteException -> stringResource(R.string.error_onboarding_incomplete)
 }

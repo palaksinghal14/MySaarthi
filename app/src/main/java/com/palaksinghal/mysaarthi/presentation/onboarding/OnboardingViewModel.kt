@@ -145,7 +145,7 @@ class OnboardingViewModel @Inject constructor(
 
         // Validate
         if (form.displayName.isBlank() ||form.selectedPractices.isEmpty() ||form.howLongOnPath.isBlank() ) {
-            _saveState.value = OnboardingUiState.Error(AppException.EmptyFieldsException)
+            _saveState.value = OnboardingUiState.Error(AppException.OnboardingIncompleteException)
             return
         }
 

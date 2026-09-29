@@ -63,6 +63,7 @@
 
     <string name="error_empty_fields">Please enter your email and password.</string>
     <string name="error_invalid_email">Please enter a valid email address.</string>
+    <string name="error_onboarding_incomplete">Please fill in all the required details before continuing.</string>
 
 </resources>
 

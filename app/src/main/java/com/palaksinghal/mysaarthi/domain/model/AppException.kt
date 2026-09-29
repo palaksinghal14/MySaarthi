@@ -36,4 +36,5 @@ sealed class AppException:Exception(){
 
     object EmptyFieldsException : AppException()
     object InvalidEmailFormatException : AppException()
+    object OnboardingIncompleteException : AppException()
 }
