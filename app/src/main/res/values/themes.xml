@@ -2,4 +2,9 @@
 <resources>
 
     <style name="Theme.MySaarthi" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.MySaarthi.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/mysaarthi_cream</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_transparent</item>
+        <item name="postSplashScreenTheme">@style/Theme.MySaarthi</item>
+    </style>
 </resources>
