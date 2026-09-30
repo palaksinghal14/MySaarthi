@@ -51,6 +51,19 @@ class AuthenticationRepoImp @Inject constructor(
     override fun getCurrentUserId(): String? {
        return auth.currentUser?.uid
     }
+
+    override suspend fun deleteAccount(): Result<Unit> {
+        return try{
+            val currentUser=auth.currentUser ?: return Result.failure(AppException.UserNotFoundException)
+
+            currentUser.delete().await()
+
+             Result.success(Unit)
+        }catch (e: Exception){
+            Result.failure(e.toAppException(context))
+        }
+
+    }
 }
 
 private fun FirebaseUser.toDomainUser() =User(

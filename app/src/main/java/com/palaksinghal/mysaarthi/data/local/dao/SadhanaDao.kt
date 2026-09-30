@@ -32,4 +32,7 @@ interface SadhanaDao {
 
     @Query("SELECT DISTINCT date FROM sadhana_entries WHERE isCompleted = 1 ORDER BY date ASC")
     suspend fun getAllCompletedDates(): List<String>
+
+    @Query("DELETE FROM sadhana_entries")
+    suspend fun deleteAll()
 }

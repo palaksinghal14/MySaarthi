@@ -3,6 +3,7 @@ package com.palaksinghal.mysaarthi.data.repository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.palaksinghal.mysaarthi.core.utils.toAppException
+import com.palaksinghal.mysaarthi.data.local.dao.SadhanaDao
 import com.palaksinghal.mysaarthi.data.local.dao.UserProfileDao
 import com.palaksinghal.mysaarthi.data.local.entity.toDomain
 import com.palaksinghal.mysaarthi.data.local.entity.toEntity
@@ -19,7 +20,8 @@ import javax.inject.Inject
 class UserProfileRepoImpl @Inject constructor(
     private val auth : FirebaseAuth,
     private val firestore : FirebaseFirestore,
-    private val userProfileDao: UserProfileDao
+    private val userProfileDao: UserProfileDao,
+    private val sadhanaDao: SadhanaDao
 ) : UserProfileRepo {
 
     override suspend fun saveUserProfile(userProfile: UserProfile): Result<Unit> {
@@ -94,6 +96,37 @@ class UserProfileRepoImpl @Inject constructor(
          return userProfileDao.observeUserProfile(uid).map { entity ->
              entity?.toDomain()
          }
+    }
+
+    override suspend fun deleteAllUserData(uid: String): Result<Unit> {
+        return try {
+            // Delete satsang_requests where this user is either party
+            val asFromUid = firestore.collection("satsang_requests")
+                .whereEqualTo("fromUid", uid)
+                .get()
+                .await()
+            val asToUid = firestore.collection("satsang_requests")
+                .whereEqualTo("toUid", uid)
+                .get()
+                .await()
+
+            (asFromUid.documents + asToUid.documents).forEach { doc ->
+                doc.reference.delete().await()
+            }
+
+            // Delete the user's Firestore profile document
+            firestore.collection("users").document(uid).delete().await()
+
+            // Delete local Room cache
+            userProfileDao.deleteUserProfile(uid)
+
+            //delete sadhna entries
+            sadhanaDao.deleteAll()
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e.toAppException())
+        }
     }
 }
 

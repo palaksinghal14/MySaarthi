@@ -21,4 +21,7 @@ interface UserProfileDao {
     @Query("SELECT onboardingCompleted FROM userProfile WHERE uid = :uid")
     suspend fun isOnboardingCompleted(uid: String): Boolean?
 
+    @Query("DELETE FROM userProfile WHERE uid=:uid")
+    suspend fun deleteUserProfile(uid: String)
+
 }

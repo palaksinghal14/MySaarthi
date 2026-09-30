@@ -9,4 +9,5 @@ interface UserProfileRepo {
     suspend fun getUserProfile(uid:String) :Result<UserProfile?>
     fun observeUserProfile(uid:String): Flow<UserProfile?>
     suspend fun isOnboardingCompleted(uid: String): Result<Boolean>
+    suspend fun deleteAllUserData(uid:String) :Result<Unit>
 }
