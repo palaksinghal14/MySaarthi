@@ -68,8 +68,23 @@ class UserProfileRepoImpl @Inject constructor(
 
     override suspend fun isOnboardingCompleted(uid: String): Result<Boolean> {
         return try {
-            val ans=userProfileDao.isOnboardingCompleted(uid)?:false
-            Result.success(ans)
+            // Check Room first — fast, offline-safe for the normal case
+            val localResult = userProfileDao.isOnboardingCompleted(uid)
+            if (localResult != null) {
+                return Result.success(localResult)
+            }
+
+            // Room has nothing (fresh install, cache wiped) — fall back to Firestore,
+            // and cache the result locally so subsequent launches are fast again
+            val snapshot = firestore.collection("users").document(uid).get().await()
+            val userProfile = snapshot.toObject(UserProfile::class.java)
+
+            if (userProfile != null) {
+                userProfileDao.insertUserProfile(userProfile.toEntity())
+                Result.success(userProfile.onboardingCompleted)
+            } else {
+                Result.success(false)
+            }
         } catch (e: Exception) {
             Result.failure(e.toAppException())
         }
