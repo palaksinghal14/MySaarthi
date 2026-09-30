@@ -13,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -40,7 +41,9 @@ class YouViewModel @Inject constructor(
     fun observeProfile(){
         viewModelScope.launch {
             val uid = authRepo.getCurrentUserId()?: return@launch
-            userProfileRepo.observeUserProfile(uid).collect { profile ->
+            userProfileRepo.observeUserProfile(uid)
+                .catch { }
+                .collect { profile ->
                 _uiState.update {
                     it.copy(
                         isLoading = false,
@@ -124,7 +127,9 @@ class YouViewModel @Inject constructor(
 
     fun observeIncomingRequests(){
         viewModelScope.launch {
-            satsangRequestRepository.getIncomingSatsangReq().collect { requests ->
+            satsangRequestRepository.getIncomingSatsangReq()
+                .catch { }
+                .collect { requests ->
                 _uiState.update { it.copy(incomingRequests = requests.filter { request -> request.status== SatsangRequestStatus.PENDING }) }
             }
         }
@@ -132,7 +137,9 @@ class YouViewModel @Inject constructor(
 
     fun observeOutgoingRequests(){
         viewModelScope.launch {
-            satsangRequestRepository.getOutgoingSatsangReq().collect { requests ->
+            satsangRequestRepository.getOutgoingSatsangReq()
+                .catch { }
+                .collect { requests ->
                 _uiState.update { it.copy(outgoingRequests = requests.filter { request -> request.status!= SatsangRequestStatus.ACCEPTED }) }
             }
         }
@@ -150,7 +157,9 @@ class YouViewModel @Inject constructor(
 
     private fun observeConnections() {
         viewModelScope.launch {
-            satsangRequestRepository.getConnectedUsers().collect { connections ->
+            satsangRequestRepository.getConnectedUsers()
+                .catch { }
+                .collect { connections ->
                 _uiState.update { it.copy(connections = connections) }
             }
         }

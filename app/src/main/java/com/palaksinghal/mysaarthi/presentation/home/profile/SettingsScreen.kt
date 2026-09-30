@@ -40,13 +40,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.palaksinghal.mysaarthi.presentation.home.profile.YouViewModel
+import com.palaksinghal.mysaarthi.presentation.home.profile.SettingsViewModel
+
 
 @Composable
 fun SettingsScreen(
     onBack: () -> Unit,
     onSignOut: () -> Unit,
-    viewModel: YouViewModel = hiltViewModel()
+    viewModel: SettingsViewModel = hiltViewModel()
 ) {
     var showSignOutDialog by remember { mutableStateOf(false) }
 
