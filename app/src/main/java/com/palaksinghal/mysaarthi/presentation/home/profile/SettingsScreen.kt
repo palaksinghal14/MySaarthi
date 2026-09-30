@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.outlined.PrivacyTip
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -122,6 +123,14 @@ fun SettingsScreen(
                             data = Uri.parse("mailto:palak.singhal.builds@gmail.com")
                             putExtra(Intent.EXTRA_SUBJECT, "MySaarthi Feedback")
                         }
+                        context.startActivity(intent)
+                    }
+                )
+
+                SettingsActionRow(
+                    label = "Privacy Policy",
+                    onClick = {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://palaksinghal14.github.io/mysaarthi-privacy-policy/"))
                         context.startActivity(intent)
                     }
                 )
