@@ -3,14 +3,12 @@ package com.palaksinghal.mysaarthi.presentation.home.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.palaksinghal.mysaarthi.data.local.dao.SadhanaDao
-import com.palaksinghal.mysaarthi.domain.model.AppException
 import com.palaksinghal.mysaarthi.domain.model.DailyCompletionRate
 import com.palaksinghal.mysaarthi.domain.model.SatsangRequestStatus
 import com.palaksinghal.mysaarthi.domain.repository.AuthenticationRepo
 import com.palaksinghal.mysaarthi.domain.repository.SatsangRequestRepository
 import com.palaksinghal.mysaarthi.domain.repository.UserProfileRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch

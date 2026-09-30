@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -25,7 +24,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.palaksinghal.mysaarthi.R
@@ -33,12 +31,11 @@ import com.palaksinghal.mysaarthi.presentation.theme.Accent
 import com.palaksinghal.mysaarthi.presentation.theme.Bg
 import com.palaksinghal.mysaarthi.presentation.theme.CaprasimoFamily
 import com.palaksinghal.mysaarthi.presentation.theme.FigtreeFamily
-import com.palaksinghal.mysaarthi.presentation.theme.Neutral200
 import com.palaksinghal.mysaarthi.presentation.theme.Neutral700
 import com.palaksinghal.mysaarthi.presentation.theme.Sage100
 import com.palaksinghal.mysaarthi.presentation.theme.Sage600
-import com.palaksinghal.mysaarthi.presentation.theme.TextInk
 import com.palaksinghal.mysaarthi.presentation.theme.Terracotta100
+import com.palaksinghal.mysaarthi.presentation.theme.TextInk
 
 @Composable
 fun WelcomeScreen(

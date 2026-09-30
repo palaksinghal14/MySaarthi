@@ -21,12 +21,12 @@ import androidx.navigation.compose.rememberNavController
 import com.palaksinghal.mysaarthi.R
 import com.palaksinghal.mysaarthi.core.navigation.ScreenRoutes
 import com.palaksinghal.mysaarthi.presentation.home.profile.SatsangRequestsScreen
+import com.palaksinghal.mysaarthi.presentation.home.profile.YouScreen
 import com.palaksinghal.mysaarthi.presentation.home.today.EveningCheckInScreen
 import com.palaksinghal.mysaarthi.presentation.home.today.SadhanaDetailScreen
 import com.palaksinghal.mysaarthi.presentation.home.today.ShlokaDetailScreen
 import com.palaksinghal.mysaarthi.presentation.home.today.TodayScreen
 import com.palaksinghal.mysaarthi.presentation.nearby.NearbyScreen
-import com.palaksinghal.mysaarthi.presentation.home.profile.YouScreen
 import com.palaksinghal.mysaarthi.presentation.profile.EditProfileScreen
 import com.palaksinghal.mysaarthi.presentation.profile.SettingsScreen
 import com.palaksinghal.mysaarthi.presentation.theme.Accent

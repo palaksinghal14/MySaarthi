@@ -1,7 +1,5 @@
 package com.palaksinghal.mysaarthi.data.local.dto
 
-import com.palaksinghal.mysaarthi.data.local.entity.ShlokaEntity
-
 import kotlinx.serialization.Serializable
 
 @Serializable

@@ -1,8 +1,6 @@
 package com.palaksinghal.mysaarthi.presentation.home.profile
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,8 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -41,8 +36,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.palaksinghal.mysaarthi.domain.model.SatsangRequest
-import com.palaksinghal.mysaarthi.domain.model.SatsangRequestStatus
 import com.palaksinghal.mysaarthi.presentation.theme.Accent
 import com.palaksinghal.mysaarthi.presentation.theme.Bg
 import com.palaksinghal.mysaarthi.presentation.theme.CaprasimoFamily
@@ -55,7 +48,6 @@ import com.palaksinghal.mysaarthi.presentation.theme.Surface
 import com.palaksinghal.mysaarthi.presentation.theme.Terracotta100
 import com.palaksinghal.mysaarthi.presentation.theme.Terracotta300
 import com.palaksinghal.mysaarthi.presentation.theme.Terracotta500
-import com.palaksinghal.mysaarthi.presentation.theme.Terracotta700
 import com.palaksinghal.mysaarthi.presentation.theme.TextInk
 
 @OptIn(ExperimentalLayoutApi::class)

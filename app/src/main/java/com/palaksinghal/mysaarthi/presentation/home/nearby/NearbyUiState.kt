@@ -3,7 +3,6 @@ package com.palaksinghal.mysaarthi.presentation.nearby
 import com.palaksinghal.mysaarthi.domain.model.AppException
 import com.palaksinghal.mysaarthi.domain.model.NearbySeeker
 import com.palaksinghal.mysaarthi.domain.model.NearbyTemple
-import com.palaksinghal.mysaarthi.domain.model.SatsangRequestStatus
 
 enum class NearbyFilter { PLACES, SEEKERS }
 enum class SeekerConnectionState { NONE, PENDING, CONNECTED, DECLINED }

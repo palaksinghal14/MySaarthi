@@ -54,8 +54,6 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.palaksinghal.mysaarthi.presentation.home.profile.EditProfileViewModel
-import com.palaksinghal.mysaarthi.presentation.onboarding.OnboardingSectionHeader
-import com.palaksinghal.mysaarthi.presentation.onboarding.PracticeReminderRow
 import com.palaksinghal.mysaarthi.presentation.theme.Accent
 import com.palaksinghal.mysaarthi.presentation.theme.Bg
 import com.palaksinghal.mysaarthi.presentation.theme.CaprasimoFamily

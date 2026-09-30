@@ -3,12 +3,9 @@ package com.palaksinghal.mysaarthi.presentation.authentication
 import android.util.Patterns.EMAIL_ADDRESS
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.palaksinghal.mysaarthi.core.utils.toAppException
 import com.palaksinghal.mysaarthi.domain.model.AppException
-import com.palaksinghal.mysaarthi.domain.model.User
 import com.palaksinghal.mysaarthi.domain.repository.AuthenticationRepo
 import com.palaksinghal.mysaarthi.domain.repository.UserProfileRepo
-import com.palaksinghal.mysaarthi.presentation.util.toUserMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

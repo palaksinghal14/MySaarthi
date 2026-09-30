@@ -11,7 +11,6 @@ import com.google.android.gms.location.CurrentLocationRequest
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.Priority
 import com.palaksinghal.mysaarthi.core.utils.toAppException
-import com.palaksinghal.mysaarthi.data.local.dao.UserProfileDao
 import com.palaksinghal.mysaarthi.domain.model.AppException
 import com.palaksinghal.mysaarthi.domain.model.Location
 import com.palaksinghal.mysaarthi.domain.repository.AuthenticationRepo

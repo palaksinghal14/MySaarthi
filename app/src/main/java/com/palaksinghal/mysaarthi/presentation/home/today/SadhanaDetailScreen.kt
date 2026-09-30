@@ -35,7 +35,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import com.palaksinghal.mysaarthi.core.navigation.ScreenRoutes
-import com.palaksinghal.mysaarthi.domain.model.PracticeReminder
 import com.palaksinghal.mysaarthi.domain.model.SadhanaEntry
 import com.palaksinghal.mysaarthi.presentation.home.HomeViewModel
 import com.palaksinghal.mysaarthi.presentation.theme.Accent

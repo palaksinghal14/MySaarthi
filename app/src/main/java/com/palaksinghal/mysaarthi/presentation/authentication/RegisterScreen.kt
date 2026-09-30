@@ -21,10 +21,8 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -49,10 +47,7 @@ import com.palaksinghal.mysaarthi.presentation.theme.Accent
 import com.palaksinghal.mysaarthi.presentation.theme.Bg
 import com.palaksinghal.mysaarthi.presentation.theme.CaprasimoFamily
 import com.palaksinghal.mysaarthi.presentation.theme.FigtreeFamily
-import com.palaksinghal.mysaarthi.presentation.theme.Neutral300
-import com.palaksinghal.mysaarthi.presentation.theme.Neutral400
 import com.palaksinghal.mysaarthi.presentation.theme.Neutral700
-import com.palaksinghal.mysaarthi.presentation.theme.Surface
 import com.palaksinghal.mysaarthi.presentation.theme.TextInk
 import com.palaksinghal.mysaarthi.presentation.util.toUserMessage
 

@@ -1,18 +1,16 @@
 package com.palaksinghal.mysaarthi.core.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.palaksinghal.mysaarthi.presentation.authentication.AuthUiState
 import com.palaksinghal.mysaarthi.presentation.authentication.LoginScreen
 import com.palaksinghal.mysaarthi.presentation.authentication.RegisterScreen
 import com.palaksinghal.mysaarthi.presentation.home.HomeShell
 import com.palaksinghal.mysaarthi.presentation.onboarding.OnboardingScreen
 import com.palaksinghal.mysaarthi.presentation.splash.SplashScreen
 import com.palaksinghal.mysaarthi.presentation.welcome.WelcomeScreen
-import androidx.compose.runtime.LaunchedEffect
 
 
 @Composable

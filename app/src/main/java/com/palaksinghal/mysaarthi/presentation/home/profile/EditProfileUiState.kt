@@ -1,7 +1,6 @@
 package com.palaksinghal.mysaarthi.presentation.home.profile
 
 import com.palaksinghal.mysaarthi.domain.model.AppException
-import com.palaksinghal.mysaarthi.domain.model.PracticeReminder
 
 data class EditProfileUiState(
     val isLoading: Boolean = true,

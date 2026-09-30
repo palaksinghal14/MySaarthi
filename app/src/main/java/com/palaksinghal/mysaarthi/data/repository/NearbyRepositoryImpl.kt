@@ -1,6 +1,8 @@
 package com.palaksinghal.mysaarthi.data.repository
 
 import android.content.Context
+import com.firebase.geofire.GeoFireUtils
+import com.firebase.geofire.GeoLocation
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.model.CircularBounds
 import com.google.android.libraries.places.api.model.Place
@@ -14,11 +16,9 @@ import com.palaksinghal.mysaarthi.domain.model.NearbyTemple
 import com.palaksinghal.mysaarthi.domain.repository.AuthenticationRepo
 import com.palaksinghal.mysaarthi.domain.repository.LocationRepository
 import com.palaksinghal.mysaarthi.domain.repository.NearbyRepository
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
-import com.firebase.geofire.GeoFireUtils
-import com.firebase.geofire.GeoLocation
-import dagger.hilt.android.qualifiers.ApplicationContext
 
 class NearbyRepositoryImpl @Inject constructor(
     @ApplicationContext val context: Context,

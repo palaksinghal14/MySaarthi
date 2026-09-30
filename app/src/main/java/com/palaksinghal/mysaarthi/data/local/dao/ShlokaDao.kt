@@ -5,7 +5,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.palaksinghal.mysaarthi.data.local.entity.ShlokaEntity
-import com.palaksinghal.mysaarthi.domain.model.Shloka
 
 @Dao
 interface ShlokaDao {

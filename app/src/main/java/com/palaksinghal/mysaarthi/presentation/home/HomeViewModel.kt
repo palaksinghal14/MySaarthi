@@ -4,7 +4,6 @@ package com.palaksinghal.mysaarthi.presentation.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.palaksinghal.mysaarthi.domain.model.AppException
-import com.palaksinghal.mysaarthi.domain.model.SadhanaEntry
 import com.palaksinghal.mysaarthi.domain.repository.AuthenticationRepo
 import com.palaksinghal.mysaarthi.domain.repository.SadhanaRepository
 import com.palaksinghal.mysaarthi.domain.repository.ShlokaRepo
@@ -13,7 +12,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
