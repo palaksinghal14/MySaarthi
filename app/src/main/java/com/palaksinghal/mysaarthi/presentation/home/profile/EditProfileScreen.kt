@@ -1,5 +1,9 @@
 package com.palaksinghal.mysaarthi.presentation.profile
 
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -42,9 +46,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.palaksinghal.mysaarthi.presentation.home.profile.EditProfileViewModel
@@ -67,6 +73,24 @@ fun EditProfileScreen(
     viewModel: EditProfileViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    val context= LocalContext.current
+
+    var hasLocationPermission by remember { mutableStateOf(
+        ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        )== PackageManager.PERMISSION_GRANTED
+     )
+    }
+
+    var showRevokeExplanation by remember { mutableStateOf(false) }
+
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ){ isGranted->
+        hasLocationPermission=isGranted
+    }
 
     // Navigate back on successful save
     LaunchedEffect(uiState.saveSuccess) {
@@ -287,6 +311,56 @@ fun EditProfileScreen(
                 }
             }
 
+            // Use my location toggle
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(14.dp),
+                color = Surface,
+                border = androidx.compose.foundation.BorderStroke(1.dp, Neutral300)
+            ) {
+                Column {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Text(
+                            text = "Use my location",
+                            modifier = Modifier.weight(1f),
+                            fontFamily = FigtreeFamily,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 15.sp,
+                            color = TextInk
+                        )
+                        Switch(
+                            checked = hasLocationPermission,
+                            onCheckedChange = { wantsToEnable ->
+                                if (wantsToEnable && !hasLocationPermission) {
+                                    locationPermissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
+                                } else if (!wantsToEnable && hasLocationPermission) {
+                                    showRevokeExplanation = true
+                                }
+                            },
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = Bg,
+                                checkedTrackColor = Accent,
+                                uncheckedThumbColor = Neutral400,
+                                uncheckedTrackColor = Neutral300
+                            )
+                        )
+                    }
+
+                    if (showRevokeExplanation) {
+                        Text(
+                            text = "To turn off location access, go to your phone's Settings → Apps → MySaarthi → Permissions.",
+                            fontFamily = FigtreeFamily,
+                            fontSize = 12.sp,
+                            color = Neutral700,
+                            modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp)
+                        )
+                    }
+                }
+            }
             // Open to satsang toggle
             Surface(
                 modifier = Modifier.fillMaxWidth(),
