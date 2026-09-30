@@ -72,6 +72,17 @@ fun OnboardingScreen(
             }
         }
     }
+    LaunchedEffect(Unit) {
+        val hasPermission = ContextCompat.checkSelfPermission(
+            context, Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (hasPermission) {
+            viewModel.updateUseLocation(true)
+        }
+    }
+    var showRevokeExplanation by remember { mutableStateOf(false) }
+
     LaunchedEffect(saveState) {
         if (saveState is OnboardingUiState.Success) {
             viewModel.resetSaveState()
@@ -336,10 +347,32 @@ fun OnboardingScreen(
                                 }
 
                             }else{
-                                viewModel.updateUseLocation(false)
+                                val hasPermission = ContextCompat.checkSelfPermission(
+                                    context, Manifest.permission.ACCESS_COARSE_LOCATION
+                                ) == PackageManager.PERMISSION_GRANTED
+
+
+                                if (hasPermission) {
+                                    showRevokeExplanation = true
+                                    // Don't call viewModel.updateUseLocation(false) here —
+                                    // the toggle should stay reflecting reality
+                                } else {
+                                    viewModel.updateUseLocation(false)
+                                }
                             }
                         }
                     )
+
+                    if (showRevokeExplanation) {
+                        Text(
+                            text = "To turn off location access, go to your phone's Settings → Apps → MySaarthi → Permissions.",
+                            fontFamily = FigtreeFamily,
+                            fontSize = 12.sp,
+                            color = Neutral700,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
+
                     ToggleRow(
                         icon = R.drawable.ic_satsang,
                         label = "Open to satsang requests",
