@@ -10,6 +10,7 @@ import com.palaksinghal.mysaarthi.domain.repository.AuthenticationRepo
 import com.palaksinghal.mysaarthi.domain.repository.LocationRepository
 import com.palaksinghal.mysaarthi.domain.repository.NearbyRepository
 import com.palaksinghal.mysaarthi.domain.repository.SatsangRequestRepository
+import com.palaksinghal.mysaarthi.domain.repository.UserProfileRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,7 +27,8 @@ class NearbyViewModel @Inject constructor(
     private val nearbyRepository: NearbyRepository,
     private val locationRepository: LocationRepository,
     private val satsangRequestRepository: SatsangRequestRepository,
-    private val authRepo : AuthenticationRepo
+    private val authRepo : AuthenticationRepo,
+    private val userProfileRepo: UserProfileRepo
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(NearbyUiState())
@@ -41,12 +43,21 @@ class NearbyViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
 
+            val myUid = authRepo.getCurrentUserId()
+            val isOpenToSatsang = myUid?.let {
+                userProfileRepo.getUserProfile(it).getOrNull()?.isOpenToSatsang
+            } ?: false
+
             val myLocationDeferred = async { locationRepository.getUserLocation() }
-            val seekersDeferred = async { nearbyRepository.getNearbySeekers(DEFAULT_RADIUS_KM) }
+            val seekersDeferred = if (isOpenToSatsang) {
+                async { nearbyRepository.getNearbySeekers(DEFAULT_RADIUS_KM) }
+            } else {
+                null
+            }
             val templesDeferred = async { nearbyRepository.getNearbyTemples(DEFAULT_RADIUS_KM) }
 
             val myLocationResult = myLocationDeferred.await()
-            val seekersResult = seekersDeferred.await()
+            val seekersResult = seekersDeferred?.await()
             val templesResult = templesDeferred.await()
 
             var combinedError: AppException? = null
@@ -55,17 +66,21 @@ class NearbyViewModel @Inject constructor(
                 _uiState.update { it.copy(userLat = location.lat, userLng = location.lng) }
             }
 
-            seekersResult
-                .onSuccess { seekers ->
-                    Log.d("Nearby", "Seekers success: ${seekers.size}")
-                    _uiState.update { it.copy(seekers = seekers) }
-                }
-                .onFailure { throwable ->
-                    Log.e("Nearby", "Seekers failed: ${throwable.message}")
-                    combinedError = throwable as? AppException
-                        ?: AppException.UnknownException(throwable.message)
-                }
-
+            if(seekersResult!=null) {
+                seekersResult
+                    .onSuccess { seekers ->
+                        Log.d("Nearby", "Seekers success: ${seekers.size}")
+                        _uiState.update { it.copy(seekers = seekers) }
+                    }
+                    .onFailure { throwable ->
+                        Log.e("Nearby", "Seekers failed: ${throwable.message}")
+                        combinedError = throwable as? AppException
+                            ?: AppException.UnknownException(throwable.message)
+                    }
+            }else{
+                // Not open to satsang — no seekers to show, and this isn't an error state.
+                _uiState.update { it.copy(seekers = emptyList()) }
+            }
             templesResult
                 .onSuccess { temples ->
                     Log.d("Nearby", "Temples success: ${temples.size}")
@@ -79,7 +94,7 @@ class NearbyViewModel @Inject constructor(
                     }
                 }
 
-            _uiState.update { it.copy(isLoading = false, error = combinedError) }
+            _uiState.update { it.copy(isLoading = false, error = combinedError,isOpenToSatsang=isOpenToSatsang) }
         }
     }
 
@@ -123,6 +138,11 @@ class NearbyViewModel @Inject constructor(
     }
 
     fun sendSatsangRequest(toUid: String, toDisplayName: String) {
+        // Safety net — the UI shouldn't expose a send action when the user
+        // themselves is closed to satsang, since they won't even see seekers.
+        // The Firestore rule is the real enforcement; this just avoids firing
+        // a request that the server will reject anyway.
+        if (!_uiState.value.isOpenToSatsang) return
         viewModelScope.launch {
             satsangRequestRepository.sendSatsangReq(toUid, toDisplayName)
                 .onSuccess {

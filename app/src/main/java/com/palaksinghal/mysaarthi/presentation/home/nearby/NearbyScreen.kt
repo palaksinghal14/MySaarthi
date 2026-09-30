@@ -31,6 +31,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,6 +46,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -86,6 +90,23 @@ fun NearbyScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var selectedPlace by remember { mutableStateOf<SelectedPlace?>(null) }
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            // Re-fetch whenever this screen comes back into the foreground —
+            // covers returning from EditProfile after toggling Open to Satsang,
+            // since the ViewModel instance survives tab switches and init{}
+            // only ran once when it was first created.
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.loadNearbyData()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
   //  val mapStyleOptions = remember {
   //      MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style)
@@ -211,9 +232,14 @@ fun NearbyScreen(
                                 TempleListItem(temple, onClick = { selectedPlace = SelectedPlace.Temple(temple) })
                             }
                         } else {
-                            if (uiState.seekers.isEmpty()) item { EmptyStateText("No seekers found nearby yet.") }
-                            else items(uiState.seekers) { seeker ->
-                                SeekerListItem(seeker, onClick = { selectedPlace = SelectedPlace.Seeker(seeker) })
+                            if (!uiState.isOpenToSatsang) {
+                                item { EmptyStateText("Turn on \"Open to Satsang\" in your profile to discover nearby seekers.") }
+                            } else if (uiState.seekers.isEmpty()) {
+                                item { EmptyStateText("No seekers found nearby yet.") }
+                            } else {
+                                items(uiState.seekers) { seeker ->
+                                    SeekerListItem(seeker, onClick = { selectedPlace = SelectedPlace.Seeker(seeker) })
+                                }
                             }
                         }
                     }
