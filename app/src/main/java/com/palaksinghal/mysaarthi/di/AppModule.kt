@@ -37,9 +37,7 @@ object AppModule {
         context,
         GitaDatabase::class.java,
         "gita_database"
-    )
-        .fallbackToDestructiveMigration(true)
-        .build()
+    ).build()
 
     @Provides
     @Singleton

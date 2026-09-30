@@ -11,7 +11,15 @@ import com.palaksinghal.mysaarthi.data.local.entity.SadhanaEntryEntity
 import com.palaksinghal.mysaarthi.data.local.entity.ShlokaEntity
 import com.palaksinghal.mysaarthi.data.local.entity.UserProfileEntity
 
-@Database(entities = [ShlokaEntity::class , UserProfileEntity :: class , SadhanaEntryEntity:: class] , version = 4, exportSchema =false)
+@Database(
+    entities = [
+        ShlokaEntity::class ,
+        UserProfileEntity :: class ,
+        SadhanaEntryEntity:: class
+               ] ,
+    version = 1,
+    exportSchema =true
+)
 @TypeConverters(Converters::class)
 abstract class GitaDatabase: RoomDatabase() {
 

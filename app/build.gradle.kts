@@ -31,6 +31,7 @@ android {
         buildConfigField("String" ,"MAPS_API_KEY" ,"\"${localProperties.getProperty("MAPS_API_KEY") ?: ""}\"")
         buildConfigField("String", "PLACES_API_KEY", "\"${localProperties.getProperty("PLACES_API_KEY") ?: ""}\"")
         manifestPlaceholders["MAPS_API_KEY"] = localProperties.getProperty("MAPS_API_KEY") ?: ""
+
     }
 
     buildTypes {
@@ -145,4 +146,8 @@ dependencies {
 
     //Lifecycle Process
     implementation(libs.androidx.lifecycle.process)
+}
+
+ksp{
+    arg("room.schemaLocation" ,"$projectDir/schemas")
 }

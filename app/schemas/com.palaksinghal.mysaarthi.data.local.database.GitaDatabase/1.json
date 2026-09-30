@@ -1,0 +1,189 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "e062d040ee07c2cc1fba12f910c8a4a2",
+    "entities": [
+      {
+        "tableName": "shlokas",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`shlokaNumber` INTEGER NOT NULL, `chapter` INTEGER NOT NULL, `verse` INTEGER NOT NULL, `sanskrit` TEXT NOT NULL, `hindi` TEXT NOT NULL, `english` TEXT NOT NULL, `transliteration` TEXT NOT NULL, PRIMARY KEY(`chapter`, `verse`))",
+        "fields": [
+          {
+            "fieldPath": "shlokaNumber",
+            "columnName": "shlokaNumber",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "chapter",
+            "columnName": "chapter",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "verse",
+            "columnName": "verse",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sanskrit",
+            "columnName": "sanskrit",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hindi",
+            "columnName": "hindi",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "english",
+            "columnName": "english",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "transliteration",
+            "columnName": "transliteration",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "chapter",
+            "verse"
+          ]
+        }
+      },
+      {
+        "tableName": "userProfile",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` TEXT NOT NULL, `displayName` TEXT NOT NULL, `practices` TEXT NOT NULL, `email` TEXT NOT NULL, `howLongOnPath` TEXT NOT NULL, `isOpenToSatsang` INTEGER NOT NULL, `spiritualIntro` TEXT NOT NULL, `onboardingCompleted` INTEGER NOT NULL, `practiceReminders` TEXT NOT NULL, `geohash` TEXT NOT NULL, `lat` REAL NOT NULL, `lng` REAL NOT NULL, `lastLocationUpdate` INTEGER NOT NULL, PRIMARY KEY(`uid`))",
+        "fields": [
+          {
+            "fieldPath": "uid",
+            "columnName": "uid",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "displayName",
+            "columnName": "displayName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "practices",
+            "columnName": "practices",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "email",
+            "columnName": "email",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "howLongOnPath",
+            "columnName": "howLongOnPath",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isOpenToSatsang",
+            "columnName": "isOpenToSatsang",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "spiritualIntro",
+            "columnName": "spiritualIntro",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "onboardingCompleted",
+            "columnName": "onboardingCompleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "practiceReminders",
+            "columnName": "practiceReminders",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "geohash",
+            "columnName": "geohash",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lat",
+            "columnName": "lat",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lng",
+            "columnName": "lng",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastLocationUpdate",
+            "columnName": "lastLocationUpdate",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "uid"
+          ]
+        }
+      },
+      {
+        "tableName": "sadhana_entries",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`date` TEXT NOT NULL, `practice` TEXT NOT NULL, `isCompleted` INTEGER NOT NULL, PRIMARY KEY(`date`, `practice`))",
+        "fields": [
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "practice",
+            "columnName": "practice",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isCompleted",
+            "columnName": "isCompleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "date",
+            "practice"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e062d040ee07c2cc1fba12f910c8a4a2')"
+    ]
+  }
+}
