@@ -6,6 +6,13 @@ val localPropertiesFile = rootProject.file("local.properties")
 if (localPropertiesFile.exists()) {
     localProperties.load(FileInputStream(localPropertiesFile))
 }
+
+val keystorePropertiesFile=rootProject.file("keystore.properties")
+val keystoreProperties=Properties()
+if(keystorePropertiesFile.exists()){
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+}
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -34,6 +41,17 @@ android {
 
     }
 
+    signingConfigs{
+        create("release"){
+            if(keystorePropertiesFile.exists()){
+                storeFile=file(keystoreProperties["storeFile"] as String)
+                storePassword = keystoreProperties["storePassword"] as String
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+            }
+        }
+    }
+
     buildTypes {
         debug {
             isDebuggable=true
@@ -42,7 +60,7 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources=true
-            signingConfig=signingConfigs.getByName("debug") // // TEMPORARY — remove once real keystore is set up
+            signingConfig=signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
