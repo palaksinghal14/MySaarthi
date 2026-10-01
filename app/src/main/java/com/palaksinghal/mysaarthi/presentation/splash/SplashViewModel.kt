@@ -29,7 +29,7 @@ class SplashViewModel @Inject constructor(
        viewModelScope.launch {
 
            _splashUiState.value= SplashUiState.Loading
-           delay(1500)
+           delay(2500)
 
            if(authRepo.isUserSignedIn()){
 

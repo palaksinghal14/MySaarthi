@@ -24,6 +24,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.palaksinghal.mysaarthi.R
@@ -36,6 +37,7 @@ import com.palaksinghal.mysaarthi.presentation.theme.Sage100
 import com.palaksinghal.mysaarthi.presentation.theme.Sage600
 import com.palaksinghal.mysaarthi.presentation.theme.Terracotta100
 import com.palaksinghal.mysaarthi.presentation.theme.TextInk
+
 
 @Composable
 fun WelcomeScreen(
@@ -90,7 +92,7 @@ fun WelcomeScreen(
                 Spacer(modifier = Modifier.height(6.dp))
 
                 Text(
-                    text = "Two things, done simply.",
+                    text = "Three things, done simply.",
                     fontFamily = FigtreeFamily,
                     fontWeight = FontWeight.Normal,
                     fontSize = 14.sp,
@@ -99,18 +101,29 @@ fun WelcomeScreen(
 
                 Spacer(modifier = Modifier.height(36.dp))
 
-                // Feature 1 — Daily companion
+                // Feature 1 — Read the Gita
                 FeatureRow(
-                    icon = R.drawable.ic_brahma_muhurta,
-                    iconBgColor = Terracotta100,
-                    iconTint = Accent,
-                    title = "A daily companion",
-                    subtitle = "Your shloka, sadhana and evening check-in — from morning to night."
+                    icon = R.drawable.ic_daily_paath,
+                    iconBgColor = Sage100,
+                    iconTint = Sage600,
+                    title = "Read the Gita",
+                    subtitle = "The complete Bhagavad Gita, chapter by chapter — right in the app."
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Feature 2 — Nearby seekers
+                // Feature 2 — Daily companion
+                FeatureRow(
+                    icon = R.drawable.ic_brahma_muhurta,
+                    iconBgColor = Terracotta100,
+                    iconTint = Accent,
+                    title = "Your daily companion",
+                    subtitle = "Track your daily practices,sadhana and evening check-in — from morning to night."
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Feature 3 — Nearby seekers
                 FeatureRow(
                     icon = R.drawable.ic_satsang,
                     iconBgColor = Sage100,
