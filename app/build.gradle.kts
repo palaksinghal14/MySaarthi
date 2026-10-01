@@ -40,7 +40,9 @@ android {
             versionNameSuffix="_debug"
         }
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources=true
+            signingConfig=signingConfigs.getByName("debug") // // TEMPORARY — remove once real keystore is set up
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

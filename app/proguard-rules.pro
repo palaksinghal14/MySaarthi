@@ -19,3 +19,15 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Firestore deserializes model classes by reflection (field names, @PropertyName
+# annotations, generic type signatures) - R8 can't see that usage, so without this
+# it may rename/strip fields and Firestore reads/writes would silently return nulls
+# instead of crashing.
+-keepattributes Signature
+-keepattributes *Annotation*
+
+-keepclassmembers class com.palaksinghal.mysaarthi.domain.model.** {
+    <fields>;
+    <methods>;
+}
