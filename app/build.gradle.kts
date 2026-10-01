@@ -103,21 +103,11 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
-    implementation(libs.firebase.messaging)
 
     // Room
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
-
-    // WorkManager
-    implementation(libs.workmanager)
-    implementation(libs.hilt.work)
-    ksp(libs.hilt.work.compiler)
-
-    // Glance Widget
-    implementation(libs.glance.appwidget)
-    implementation(libs.glance.material3)
 
     // Maps & Places
     implementation(libs.maps.compose)
@@ -127,9 +117,6 @@ dependencies {
 
     // GeoFirestore
     implementation(libs.geofire.common)
-
-    // Coil
-    implementation(libs.coil.compose)
 
     // DataStore
     implementation(libs.datastore.preferences)
@@ -150,4 +137,11 @@ dependencies {
 
 ksp{
     arg("room.schemaLocation" ,"$projectDir/schemas")
+}
+
+configurations.all {
+    resolutionStrategy {
+        force("androidx.vectordrawable:vectordrawable:1.2.0")
+        force("androidx.vectordrawable:vectordrawable-animated:1.2.0")
+    }
 }
