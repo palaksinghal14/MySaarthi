@@ -1,8 +1,11 @@
 package com.palaksinghal.mysaarthi.presentation.onboarding
 
 import android.Manifest
+import android.app.AlarmManager
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateColorAsState
@@ -66,6 +69,7 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.palaksinghal.mysaarthi.R
+import com.palaksinghal.mysaarthi.core.navigation.ScreenRoutes
 import com.palaksinghal.mysaarthi.domain.model.PracticeReminder
 import com.palaksinghal.mysaarthi.presentation.theme.Accent
 import com.palaksinghal.mysaarthi.presentation.theme.Bg
@@ -101,6 +105,26 @@ fun OnboardingScreen(
         contract = ActivityResultContracts.RequestPermission()
     ) { /* granted or not — reminders will simply be silent if denied, no state to track */ }
 
+    var canScheduleExactAlarms by remember {
+        mutableStateOf(
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val alarmManager = context.getSystemService(AlarmManager::class.java)
+                alarmManager.canScheduleExactAlarms()
+            } else {
+                true
+            }
+        )
+    }
+    val exactAlarmSettingsLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) {
+        // No direct "granted/denied" result is given for this intent —
+        // just re-check the live state when the user comes back
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val alarmManager = context.getSystemService(AlarmManager::class.java)
+            canScheduleExactAlarms = alarmManager.canScheduleExactAlarms()
+        }
+    }
     LaunchedEffect(Unit) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -358,6 +382,45 @@ fun OnboardingScreen(
                             )
                         }
                     }
+
+                    if (!canScheduleExactAlarms) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(14.dp),
+                            color = Terracotta100,
+                        ) {
+                            Column(modifier = Modifier.padding(14.dp),
+                                verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                                Text(
+                                    text = "So your reminders arrive right on time, allow MySaarthi to schedule exact alarms.",
+                                    fontFamily = FigtreeFamily,
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 12.sp,
+                                    color = Terracotta700
+                                )
+                                Button(
+                                    onClick = {
+                                        val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+                                        exactAlarmSettingsLauncher.launch(intent)
+                                    },
+                                    modifier = Modifier.height(36.dp),
+                                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp),
+                                    shape = RoundedCornerShape(50),
+                                    colors = ButtonDefaults.buttonColors(containerColor = Accent)
+                                ){
+                                    Text(
+                                        "Enable in Settings",
+                                        fontFamily = FigtreeFamily,
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontSize = 12.sp,
+                                        color = Bg
+                                    )
+                                }
+                            }
+                        }
+                    }
+
                 }
             }
 

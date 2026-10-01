@@ -1,7 +1,11 @@
 package com.palaksinghal.mysaarthi.presentation.profile
 
 import android.Manifest
+import android.app.AlarmManager
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -10,6 +14,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,6 +42,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -62,6 +68,8 @@ import com.palaksinghal.mysaarthi.presentation.theme.Neutral300
 import com.palaksinghal.mysaarthi.presentation.theme.Neutral400
 import com.palaksinghal.mysaarthi.presentation.theme.Neutral700
 import com.palaksinghal.mysaarthi.presentation.theme.Surface
+import com.palaksinghal.mysaarthi.presentation.theme.Terracotta100
+import com.palaksinghal.mysaarthi.presentation.theme.Terracotta700
 import com.palaksinghal.mysaarthi.presentation.theme.TextInk
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -90,6 +98,25 @@ fun EditProfileScreen(
         hasLocationPermission=isGranted
     }
 
+    var canScheduleExactAlarms by remember {
+        mutableStateOf(
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val alarmManager = context.getSystemService(AlarmManager::class.java)
+                alarmManager.canScheduleExactAlarms()
+            } else {
+                true
+            }
+        )
+    }
+
+    val exactAlarmSettingsLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val alarmManager = context.getSystemService(AlarmManager::class.java)
+            canScheduleExactAlarms = alarmManager.canScheduleExactAlarms()
+        }
+    }
     // Navigate back on successful save
     LaunchedEffect(uiState.saveSuccess) {
         if (uiState.saveSuccess) {
@@ -305,6 +332,43 @@ fun EditProfileScreen(
                                 viewModel.toggleReminderEnabled(practice, enabled)
                             }
                         )
+                    }
+                    if (!canScheduleExactAlarms) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(14.dp),
+                            color = Terracotta100,
+                        ) {
+                            Column(modifier = Modifier.padding(14.dp),
+                                verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                                Text(
+                                    text = "So your reminders arrive right on time, allow MySaarthi to schedule exact alarms.",
+                                    fontFamily = FigtreeFamily,
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 12.sp,
+                                    color = Terracotta700
+                                )
+                                Button(
+                                    onClick = {
+                                        val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+                                        exactAlarmSettingsLauncher.launch(intent)
+                                    },
+                                    modifier = Modifier.height(36.dp),
+                                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp),
+                                    shape = RoundedCornerShape(50),
+                                    colors = ButtonDefaults.buttonColors(containerColor = Accent)
+                                ){
+                                    Text(
+                                        "Enable in Settings",
+                                        fontFamily = FigtreeFamily,
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontSize = 12.sp,
+                                        color = Bg
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
