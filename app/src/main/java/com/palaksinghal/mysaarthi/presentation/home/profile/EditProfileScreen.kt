@@ -436,7 +436,7 @@ fun EditProfileScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Text(
-                        text = "Open to satsang",
+                        text = "Open to Connect",
                         modifier = Modifier.weight(1f),
                         fontFamily = FigtreeFamily,
                         fontWeight = FontWeight.Normal,

@@ -24,7 +24,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.palaksinghal.mysaarthi.R
@@ -56,7 +55,7 @@ fun WelcomeScreen(
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             // Top content
-            Column {
+            Column{
                 // App logo
                 Icon(
                     painter = painterResource(id = R.drawable.ic_mysaarthi_logo),
@@ -92,7 +91,7 @@ fun WelcomeScreen(
                 Spacer(modifier = Modifier.height(6.dp))
 
                 Text(
-                    text = "Three things, done simply.",
+                    text = "Everything you need, in one place.",
                     fontFamily = FigtreeFamily,
                     fontWeight = FontWeight.Normal,
                     fontSize = 14.sp,
@@ -107,7 +106,7 @@ fun WelcomeScreen(
                     iconBgColor = Sage100,
                     iconTint = Sage600,
                     title = "Read the Gita",
-                    subtitle = "The complete Bhagavad Gita, chapter by chapter — right in the app."
+                    subtitle = "The complete Bhagavad Gita, chapter by chapter with translations — right in the app."
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -118,7 +117,7 @@ fun WelcomeScreen(
                     iconBgColor = Terracotta100,
                     iconTint = Accent,
                     title = "Your daily companion",
-                    subtitle = "Track your daily practices,sadhana and evening check-in — from morning to night."
+                    subtitle = "Track your daily practices, set reminders, evening check-in and maintain streaks — see how far you've walked."
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -128,8 +127,8 @@ fun WelcomeScreen(
                     icon = R.drawable.ic_satsang,
                     iconBgColor = Sage100,
                     iconTint = Sage600,
-                    title = "Your people nearby",
-                    subtitle = "Find seekers and spiritual places walking the same Bhagwat Marg."
+                    title = "Build your community",
+                    subtitle = "Connect with other people following the same path and discover temples along the way."
                 )
             }
 

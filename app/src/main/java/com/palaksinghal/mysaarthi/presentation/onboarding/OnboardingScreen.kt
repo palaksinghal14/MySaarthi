@@ -479,7 +479,7 @@ fun OnboardingScreen(
 
                     ToggleRow(
                         icon = R.drawable.ic_satsang,
-                        label = "Open to satsang requests",
+                        label = "Open to Connect",
                         checked = formState.isOpenToSatsang,
                         onCheckedChange = { viewModel.updateIsOpenToSatsang(it) }
                     )
