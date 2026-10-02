@@ -43,7 +43,7 @@ class LocationRepoImpl @Inject constructor(
                    .build()
 
                val freshLocation=
-                   withTimeoutOrNull(15_000L){
+                   withTimeoutOrNull(7_000L){
                        fusedLocationProviderClient.getCurrentLocation(request,null).await()
                    }
 

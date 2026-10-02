@@ -6,6 +6,7 @@ import com.palaksinghal.mysaarthi.domain.model.AppException
 import com.palaksinghal.mysaarthi.domain.model.PracticeReminder
 import com.palaksinghal.mysaarthi.domain.model.UserProfile
 import com.palaksinghal.mysaarthi.domain.repository.AuthenticationRepo
+import com.palaksinghal.mysaarthi.domain.repository.LocationRepository
 import com.palaksinghal.mysaarthi.domain.repository.UserProfileRepo
 import com.palaksinghal.mysaarthi.worker.ReminderScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +20,8 @@ import javax.inject.Inject
 class EditProfileViewModel @Inject constructor(
     private val authRepo: AuthenticationRepo,
     private val userProfileRepo: UserProfileRepo,
-    private val reminderScheduler: ReminderScheduler
+    private val reminderScheduler: ReminderScheduler,
+    private val locationRepository: LocationRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(EditProfileUiState())
@@ -178,6 +180,12 @@ class EditProfileViewModel @Inject constructor(
                     reminderScheduler.cancelAllReminders(oldPractices)
                     reminderScheduler.scheduleAllReminders(typedReminders)
 
+                    if (updatedProfile.isOpenToSatsang) {
+                        locationRepository.updateUserLocation()
+                            .onFailure { throwable ->
+                                android.util.Log.e("LocationUpdate", "Edit profile location write failed: ${throwable.message}", throwable)
+                            }
+                    }
                     _uiState.update { it.copy(isSaving = false, saveSuccess = true) }
                 }
                 .onFailure { throwable ->

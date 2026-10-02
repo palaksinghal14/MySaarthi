@@ -6,6 +6,7 @@ import com.palaksinghal.mysaarthi.data.local.datasources.UserPreferencesDataSour
 import com.palaksinghal.mysaarthi.domain.model.AppException
 import com.palaksinghal.mysaarthi.domain.model.PracticeReminder
 import com.palaksinghal.mysaarthi.domain.model.UserProfile
+import com.palaksinghal.mysaarthi.domain.repository.LocationRepository
 import com.palaksinghal.mysaarthi.domain.repository.UserProfileRepo
 import com.palaksinghal.mysaarthi.worker.ReminderScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -44,7 +45,8 @@ class OnboardingViewModel @Inject constructor(
     private val userProfileRepo: UserProfileRepo,
     private val userPreferences: UserPreferencesDataSource,
     private val auth: FirebaseAuth,
-    private val reminderScheduler: ReminderScheduler
+    private val reminderScheduler: ReminderScheduler,
+    private val locationRepository: LocationRepository
 ) : ViewModel() {
 
     // One StateFlow for the entire form
@@ -178,6 +180,12 @@ class OnboardingViewModel @Inject constructor(
                     // Save reminder time to DataStore after Firestore succeeds
                     userPreferences.savePracticeReminders(form.practiceReminders)
                     reminderScheduler.scheduleAllReminders(form.practiceReminders)
+                    if (userProfile.isOpenToSatsang){
+                            locationRepository.updateUserLocation()
+                                .onFailure { throwable ->
+                                    android.util.Log.e("LocationUpdate", "Onboarding location write failed: ${throwable.message}", throwable)
+                                }
+                    }
                     _saveState.value = OnboardingUiState.Success
                 }
                 .onFailure { throwable ->
