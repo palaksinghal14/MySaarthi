@@ -2,7 +2,7 @@
 
 **Walk the Bhagwat Marg, Together**
 
-MySaarthi is built for people walking the Bhagwat Marg — connect with a right community ,send and accept connection requests find nearby spiritual places with directions. Alongside that, it brings the complete Bhagavad Gita, daily sadhana tracking, reminders, and progress streaks into one place, so your path has both discipline and company.
+MySaarthi is built for people walking the Bhagwat Marg — connect with the like-minded people, send and accept connection requests, and find nearby spiritual places with directions. Alongside that, it brings the complete Bhagavad Gita, daily sadhana tracking, reminders, and progress streaks into one place, so your path has both discipline and company.
 
 Currently in **closed testing** on the Google Play Store.
 
