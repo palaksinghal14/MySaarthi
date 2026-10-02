@@ -1,160 +1,275 @@
-# MySaarthi 🪔
+#  MySaarthi
 
-## 📌 Overview
+**Walk the Bhagwat Marg, Together**
 
-MySaarthi is an Android application built for people walking the Bhagwat Marg — a spiritual path that can often feel isolating without the right community around you. Instead of juggling separate apps for daily scripture, practice tracking, and finding like-minded people, MySaarthi brings everything into one coherent experience.
+MySaarthi is built for people walking the Bhagwat Marg — connect with a right community ,send and accept connection requests find nearby spiritual places with directions. Alongside that, it brings the complete Bhagavad Gita, daily sadhana tracking, reminders, and progress streaks into one place, so your path has both discipline and company.
+
+Currently in **closed testing** on the Google Play Store.
+
+## 📌 Download latest APK
+
+[▶ Click here to download](https://github.com/palaksinghal14/MySaarthi/releases/tag/v1.0.0-closed-test)
+
+
+## 🎥 Demo Video
+
+📺 Watch the full app walkthrough:
+
+[▶ Click here to watch demo](https://drive.google.com/file/d/17CSLhZgv-aUQvhyuj4eLlBhVrfdI-CBA/view?usp=drivesdk)
 
 
 ---
 
 ## 🚀 Features
 
-### Daily Scripture & Practice
-- Daily shloka served from all 700 Bhagavad Gita verses — fully offline after first launch
-- Sadhana tracker and evening check-in for consistent daily practice
-- Home screen widget via Jetpack Glance for at-a-glance spiritual reminders
-- WorkManager-powered daily reminders that work even when the app is closed
+**Find Fellow Seekers**
+Connect with people near you who are walking the same path- send and accept connection request, and build a real community — not just a solo tracker. Turn on "Open to Connect" to become visible to others and discover them too.
 
-### Geo-Based Spiritual Community
-- Discover nearby seekers walking the same spiritual path using GeoFirestore radius queries
-- Send and receive satsang connection requests with real-time FCM notifications
-- Explore nearby temples surfaced via Google Places API
-- Spiritual profiles visible to the community — connect with intent, not just proximity
+**Read the Bhagavad Gita**
+Read the complete Gita chapter by chapter, at your own pace, with translations in English and Hindi.
 
-### Firebase Authentication
-- Google Sign-In and email/password both supported
-- Typed error handling across all auth failure states
+**Daily Practice & Reminders**
+Track your daily sadhana and practices, set & get reminders so you never miss a day.
+
+**See Your Progress**
+Keep track of your streaks over time — a clear record of how far you've walked on this path.
+
+**Discover Nearby Temples**
+Find temples near you with an integrated map.
+
+**Private by Design**
+Your exact location is never shared — only an approximate area — and every connection is entirely your choice. Delete your account and data at any time.
+
+---
+
+## 📸 Screenshots
+
+| Nearby Temple                          | Nearby Seeker                         | Connection Request                         |
+|----------------------------------------|---------------------------------------|--------------------------------------------|
+| ![Nearby Temple](screenshots/13.1.jpg) | ![Nearby Seeker ](screenshots/15.jpg) | ![Connection Request ](screenshots/16.jpg) | ![Food Guide](screenshots/food_guide.jpeg) |
+
+
+| Home                         | Profile                        | Settings                          |
+|------------------------------|--------------------------------|-----------------------------------|
+| ![ Home ](screenshots/6.jpg) | ![Profile ](screenshots/9.jpg) | ![ Settings ](screenshots/12.jpg) |
 
 ---
 
 ## 🛠 Tech Stack
 
 | Category | Technology |
-|---|---|
+|----------|------------|
 | Language | Kotlin |
-| UI | Jetpack Compose |
-| Architecture | Clean Architecture + MVVM |
-| DI | Hilt |
-| Database | Room |
-| Networking | Retrofit |
-| Backend / Auth | Firebase Authentication, Cloud Firestore, FCM |
-| Location | GeoFirestore, Google Places API, Google Maps |
-| Other | WorkManager, Jetpack Glance, DataStore, Coil |
+| UI | Jetpack Compose + Material 3 |
+| Architecture | MVVM + Clean Architecture (domain / data / presentation) |
+| State Management | StateFlow + `ViewModel` UI state |
+| DI | Hilt (Dagger) |
+| Async | Kotlin Coroutines & Flow |
+| Navigation | Navigation Compose |
+| Local Storage | Room (Gita, Sadhana, and profile data; versioned schema) |
+| Backend / Auth | Firebase Authentication, Cloud Firestore |
+| Location | Fused Location Provider + GeoFireUtils (privacy-preserving geohash proximity) |
+| Scheduling | AlarmManager + BroadcastReceiver |
+| Local Preferences | Jetpack DataStore |
 
 ---
 
 ## 🏗 Architecture
 
-MySaarthi follows Clean Architecture with MVVM and Hilt dependency injection, structured as a single module.
+MySaarthi follows **Clean Architecture** with a genuine domain layer separating business logic from both the UI and the data sources:
 
 ```
-UI (Compose screens)
+presentation/     UI (Compose screens) + ViewModels
     ↓
-ViewModel (StateFlow / UiState)
+domain/           Models, repository interfaces — no Android/Firebase dependencies
     ↓
-Use Cases (domain layer)
+data/             Repository implementations — Room, Firestore, Location
     ↓
-Repository (Room, Firebase, Retrofit, GeoFirestore)
-    ↓
-External Services (Firebase, Google Places, Bhagavad Gita API)
+External services (Firebase Auth/Firestore, Fused Location Provider)
 ```
 
-- **Data layer** — Remote (Retrofit, Firebase, GeoFirestore) and local (Room) sources behind repository interfaces
-- **Domain layer** — Use cases and domain models fully decoupled from Android framework
-- **Presentation layer** — Compose screens consuming UiState from ViewModels; no business logic in UI
-- **State management** — Sealed UiState classes per feature; repositories return typed results
-- **Error handling** — AppException sealed hierarchy, toAppException() mapper, toUserMessage() for display
+- **Presentation** — Compose screens per feature, each with a `ViewModel` exposing a single `StateFlow<UiState>`.
+- **Domain** — Pure Kotlin models and repository interfaces, with zero Android/Firebase imports.
+- **Data** — Repository implementations deciding the actual read/write strategy, including offline-first reads: Room is checked first, Firestore is the fallback on a cache miss, and results are re-cached.
+- **Error handling** — A sealed `AppException` hierarchy with one mapper that checks real connectivity before matching exception types.
+- **Real-time layer** — Satsang requests/connections are exposed as `Flow`s via `callbackFlow` + Firestore listeners.
 
 ---
 
 ## 📁 Project Structure
 
 ```
-app/src/main/java/com/palaksinghal/mysaarthi/
-├── data/
-│   ├── local/          # Room database, DAOs, entities
-│   ├── remote/         # Retrofit API, Firebase, GeoFirestore
-│   └── repository/     # Repository implementations
-├── domain/
-│   ├── model/          # Domain models, AppException
-│   ├── repository/     # Repository interfaces
-│   └── usecase/        # Use cases
-├── presentation/
-│   ├── onboarding/     # Welcome, auth, questionnaire screens
-│   ├── home/           # Today tab — shloka, sadhana, check-in
-│   ├── nearby/         # Seeker discovery, temple finder
-│   ├── profile/        # Spiritual profile, settings
-│   └── components/     # Reusable composables
-├── core/
-│   ├── utils/          # UiState, AppException, mappers
-│   ├── constants/      # App-wide constants
-│   └── navigation/     # Nav graphs
-├── di/                 # Hilt modules
-├── worker/             # WorkManager workers
-├── MainActivity.kt
-└── MySaarthi.kt        # @HiltAndroidApp Application class
+app/src/main/java/com/palaksinghal/mysaarthi
+│   MainActivity.kt
+│   MySaarthiApplication.kt
+│
+├───core
+│   ├───components
+│   ├───constants
+│   ├───navigation
+│   │       MySaarthiApp.kt
+│   │       ScreenRoutes.kt
+│   │
+│   └───utils
+│           ExceptionMapper.kt
+│           UiState.kt
+│
+├───data
+│   ├───local
+│   │   ├───converters
+│   │   │       Converters.kt
+│   │   │
+│   │   ├───dao
+│   │   │       SadhanaDao.kt
+│   │   │       ShlokaDao.kt
+│   │   │       UserProfileDao.kt
+│   │   │
+│   │   ├───database
+│   │   │       GitaDatabase.kt
+│   │   │
+│   │   ├───datasources
+│   │   │       GitaLocalDataSource.kt
+│   │   │       UserPreferencesDataSource.kt
+│   │   │
+│   │   ├───dto
+│   │   │       SholkaDto.kt
+│   │   │
+│   │   └───entity
+│   │           SadhanaEntryEntity.kt
+│   │           SholkaEntity.kt
+│   │           UserProfileEntity.kt
+│   │
+│   ├───mapper
+│   ├───remote
+│   └───repository
+│           AuthenticationRepoImp.kt
+│           LocationRepoImpl.kt
+│           NearbyRepositoryImpl.kt
+│           SadhanaRepositoryImpl.kt
+│           SatsangReqRepoImpl.kt
+│           ShlokaRepoImpl.kt
+│           UserProfileRepoImpl.kt
+│
+├───di
+│       AppModule.kt
+│       FirebaseModule.kt
+│       RepositoryModule.kt
+│
+├───domain
+│   ├───model
+│   │       AppException.kt
+│   │       DailyCompletionRate.kt
+│   │       Location.kt
+│   │       NearbySeeker.kt
+│   │       NearbyTemple.kt
+│   │       PracticeReminder.kt
+│   │       SadhanaEntry.kt
+│   │       SatsangRequest.kt
+│   │       Shloka.kt
+│   │       User.kt
+│   │       UserProfile.kt
+│   │
+│   ├───repository
+│   │       AuthenticationRepo.kt
+│   │       LocationRepository.kt
+│   │       NearbyRepository.kt
+│   │       SadhanaRepository.kt
+│   │       SatsangRequestRepository.kt
+│   │       ShlokaRepo.kt
+│   │       UserProfileRepo.kt
+│   │
+│   └───usecase          # reserved for future use
+│
+├───presentation
+│   ├───authentication
+│   │       AuthUiState.kt
+│   │       AuthViewModel.kt
+│   │       LoginScreen.kt
+│   │       RegisterScreen.kt
+│   │
+│   ├───components
+│   │       AuthTextfield.kt
+│   │
+│   ├───home
+│   │   │   HomeShell.kt
+│   │   │   HomeUiState.kt
+│   │   │   HomeViewModel.kt
+│   │   │
+│   │   ├───nearby
+│   │   │       NearbyScreen.kt
+│   │   │       NearbyUiState.kt
+│   │   │       NearbyViewModel.kt
+│   │   │
+│   │   ├───profile
+│   │   │       EditProfileScreen.kt
+│   │   │       EditProfileUiState.kt
+│   │   │       EditProfileViewModel.kt
+│   │   │       SatsangRequestsScreen.kt
+│   │   │       SettingsScreen.kt
+│   │   │       SettingsViewModel.kt
+│   │   │       YouScreen.kt
+│   │   │       YouUiState.kt
+│   │   │       YouViewModel.kt
+│   │   │
+│   │   └───today
+│   │           EveningCheckInScreen.kt
+│   │           SadhanaDetailScreen.kt
+│   │           ShlokaDetailScreen.kt
+│   │           ShlokaDetailViewModel.kt
+│   │           TodayScreen.kt
+│   │
+│   ├───onboarding
+│   │       OnboardingScreen.kt
+│   │       OnboardingUiState.kt
+│   │       OnboardingViewModel.kt
+│   │
+│   ├───splash
+│   │       SplashScreen.kt
+│   │       SplashUiState.kt
+│   │       SplashViewModel.kt
+│   │
+│   ├───theme
+│   │       Color.kt
+│   │       Theme.kt
+│   │       Type.kt
+│   │
+│   ├───util
+│   │       AppExceptionMessages.kt
+│   │
+│   └───welcome
+│           WelcomeScreen.kt
+│
+└───worker
+        BootReceiver.kt
+        ReminderAlarmReceiver.kt
+        ReminderScheduler.kt
 ```
 
----
 
-## ⚙ Setup Instructions
+## Key Architecture Decisions
 
-**Prerequisites**
-- Android Studio Otter (2025.2.3) or later
-- A Firebase project with Authentication and Firestore enabled
-- Google Cloud project with Places API and Maps SDK enabled
-- Android device or emulator running API 26+
-
-**1. Clone the repository**
-```bash
-git clone <your-repo-url>
-cd MySaarthi
-```
-
-**2. Firebase configuration**
-- Add an Android app in Firebase Console with package name `com.palaksinghal.mysaarthi`
-- Download `google-services.json` and place it in `app/`
-- Enable Email/Password and Google Sign-In under Authentication
-- Create a Firestore database
-
-**3. API Keys**
-
-Add to `gradle.properties` (gitignored):
-
-MAPS_API_KEY=your_google_maps_api_key_here
-
-
-**4. Run**
-
-Open in Android Studio, let Gradle sync, connect a device or emulator and run.
-
----
-
-## 🔑 Key Architecture Decisions
-
-**Offline-first content layer** — Bhagavad Gita verse data is fetched once from the public API via Retrofit on first launch and persisted entirely in Room. All subsequent content access reads from the local database with zero network dependency — so daily practice works even without internet.
-
-**Hybrid offline-online design** — The content layer is offline-first; the community layer (seeker discovery, satsang requests, temple finder) is intentionally real-time via Firestore and FCM. Each layer uses the approach that fits its purpose.
-
-**GeoFirestore for radius queries** — Storing raw lat/long in Firestore and filtering client-side would mean pulling all user documents and discarding most. GeoFirestore handles geohash-based radius queries natively, keeping community discovery efficient regardless of user count.
-
-**Typed error handling** — All errors flow through a sealed AppException hierarchy. Raw exceptions are mapped once via toAppException(); ViewModels receive typed exceptions; UI renders specific messages via toUserMessage().
+- **AlarmManager over WorkManager** — WorkManager reminders were getting deferred by Doze mode on locked/idle devices. Switched to `AlarmManager.setExactAndAllowWhileIdle()` + a `BootReceiver` to survive reboots.
+- **Location written on intent, not lifecycle** — Refreshing location via app-foreground or auth-state triggers missed real cases (e.g. signup completing without the app ever backgrounding). Now written directly where `isOpenToSatsang` is actually set — onboarding completion and profile save — awaited before the screen navigates away, so the write can't be cancelled mid-flight.
+- **Privacy-first location** — Only a truncated ~1.2km geohash is ever stored or queried, never exact coordinates.
+- **Consent enforced twice** — Satsang visibility is gated client-side for UX and again in Firestore rules as the real authorization boundary.
+- **Typed errors end-to-end** — One exception mapper checks real device connectivity before matching error types, so a no-internet condition is never misreported as something else.
 
 ---
 
 ## 🔐 Permissions Used
 
 | Permission | Purpose |
-|---|---|
-| INTERNET | Firebase, Retrofit, Google Places API |
-| ACCESS_FINE_LOCATION | GeoFirestore seeker discovery and nearby temple search |
-| ACCESS_COARSE_LOCATION | Declared alongside fine location |
+|------------|---------|
+| `INTERNET` | Firebase Auth/Firestore network requests. |
+| `ACCESS_COARSE_LOCATION` | Approximate device location for nearby temples/seekers discovery. |
+| `ACCESS_WIFI_STATE` | Assists location accuracy for balanced-power location fixes. |
+| `POST_NOTIFICATIONS` | Required on Android 13+ for practice reminder notifications. |
+| `SCHEDULE_EXACT_ALARM` | Lets reminders fire at the exact time chosen. |
+| `RECEIVE_BOOT_COMPLETED` | Reschedules reminders after reboot. |
+
+## 👤Author
+- **Name:** [Palak Singhal ]
+- **Gmail:** [palaksinghal148@gmail.com]
+- **Linkedin:** [https://linkedin.com/in/palak-singhal-14a78324a]
 
 ---
-
-
-## 👤 Author
-
-**Palak Singhal**
-📧 palaksinghal148@gmail.com
-🔗 [LinkedIn](https://linkedin.com/in/palak-singhal-14a78324a)
