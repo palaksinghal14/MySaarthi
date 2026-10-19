@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-private const val DEFAULT_RADIUS_KM = 10.0
+
 
 @HiltViewModel
 class NearbyViewModel @Inject constructor(
@@ -51,11 +51,11 @@ class NearbyViewModel @Inject constructor(
 
             val myLocationDeferred = async { locationRepository.getUserLocation() }
             val seekersDeferred = if (isOpenToSatsang) {
-                async { nearbyRepository.getNearbySeekers(DEFAULT_RADIUS_KM) }
+                async { nearbyRepository.getNearbySeekers(NEAR_RADIUS_KM) }
             } else {
                 null
             }
-            val templesDeferred = async { nearbyRepository.getNearbyTemples(DEFAULT_RADIUS_KM) }
+            val templesDeferred = async { nearbyRepository.getNearbyTemples(NEAR_RADIUS_KM) }
 
             val myLocationResult = myLocationDeferred.await()
             val seekersResult = seekersDeferred?.await()

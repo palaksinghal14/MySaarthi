@@ -224,17 +224,54 @@ fun NearbyScreen(
                                         onClick = { selectedPlace = SelectedPlace.Temple(temple) })
                                 }
                             } else {
-                                if (!uiState.isOpenToSatsang) {
-                                    item { EmptyStateText("Turn on \"Open to Connect\" in your profile to discover nearby seekers.") }
-                                } else if (uiState.seekers.isEmpty()) {
-                                    item { EmptyStateText("No seekers found nearby yet.") }
-                                } else {
-                                    items(uiState.seekers) { seeker ->
-                                        SeekerListItem(
-                                            seeker,
-                                            onClick = {
-                                                selectedPlace = SelectedPlace.Seeker(seeker)
-                                            })
+                                when {
+                                    !uiState.isOpenToSatsang -> {
+                                        item {
+                                            EmptyStateText(
+                                                "Turn on \"Open to Connect\" in your profile to discover seekers near you."
+                                            )
+                                        }
+                                    }
+
+                                    uiState.seekers.isEmpty() -> {
+                                        item {
+                                            EmptyStateText(
+                                                "No other seekers have joined yet. They'll appear here as the community grows."
+                                            )
+                                        }
+                                    }
+
+                                    else -> {
+                                        val near = uiState.seekers.filter { it.distanceKm <= NEAR_RADIUS_KM }
+                                        val elsewhere = uiState.seekers.filter { it.distanceKm > NEAR_RADIUS_KM }.take(10)
+
+                                        if (near.isNotEmpty()) {
+                                            item { SectionHeader("NEAR YOU") }
+                                            items(near, key = { it.uid }) { seeker ->
+                                                SeekerListItem(
+                                                    seeker,
+                                                    showDistance = true,
+                                                    onClick = { selectedPlace = SelectedPlace.Seeker(seeker) }
+                                                )
+                                            }
+                                        } else {
+                                            item {
+                                                EmptyStateText(
+                                                    "No seekers within ${NEAR_RADIUS_KM.toInt()} km of you yet."
+                                                )
+                                            }
+                                        }
+
+                                        if (elsewhere.isNotEmpty()) {
+                                            item { SectionHeader("OTHERS ON THE PATH") }
+                                            items(elsewhere, key = { it.uid }) { seeker ->
+                                                SeekerListItem(
+                                                    seeker,
+                                                    showDistance = false,
+                                                    onClick = { selectedPlace = SelectedPlace.Seeker(seeker) }
+                                                )
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -321,7 +358,14 @@ private fun PlaceInfoCard(
                             if (place.seeker.spiritualIntro.isNotBlank()) {
                                 Text("\"${place.seeker.spiritualIntro}\"", fontFamily = FigtreeFamily, fontSize = 12.sp, color = Neutral700)
                             }
-                            Text("%.1f km away".format(place.seeker.distanceKm), fontFamily = FigtreeFamily, fontSize = 12.sp, color = Accent)
+                            if (place.seeker.distanceKm <= NEAR_RADIUS_KM) {
+                                Text(
+                                    distanceBucket(place.seeker.distanceKm),
+                                    fontFamily = FigtreeFamily,
+                                    fontSize = 12.sp,
+                                    color = Accent
+                                )
+                            }
                         }
                     }
                 }
@@ -414,7 +458,7 @@ private fun TempleListItem(temple: NearbyTemple, onClick: () -> Unit) {
 }
 
 @Composable
-private fun SeekerListItem(seeker: NearbySeeker, onClick: () -> Unit) {
+private fun SeekerListItem(seeker: NearbySeeker, showDistance: Boolean, onClick: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth().clickable { onClick() },
         verticalAlignment = Alignment.CenterVertically,
@@ -424,8 +468,20 @@ private fun SeekerListItem(seeker: NearbySeeker, onClick: () -> Unit) {
             Icon(Icons.Filled.Person, null, tint = Sage600, modifier = Modifier.size(22.dp))
         }
         Column {
-            Text("${seeker.displayName} · ${seeker.howLongOnPath}", fontFamily = FigtreeFamily, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = TextInk)
-            Text("%.1f km · open to Connect".format(seeker.distanceKm), fontFamily = FigtreeFamily, fontSize = 12.sp, color = Neutral400)
+            Text(
+                "${seeker.displayName} · ${seeker.howLongOnPath}",
+                fontFamily = FigtreeFamily,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 14.sp,
+                color = TextInk
+            )
+            Text(
+                if (showDistance) "${distanceBucket(seeker.distanceKm)} · open to connect"
+                else "open to connect",
+                fontFamily = FigtreeFamily,
+                fontSize = 12.sp,
+                color = Neutral400
+            )
         }
     }
 }
@@ -433,4 +489,22 @@ private fun SeekerListItem(seeker: NearbySeeker, onClick: () -> Unit) {
 @Composable
 private fun EmptyStateText(text: String) {
     Text(text, fontFamily = FigtreeFamily, fontSize = 14.sp, color = Neutral400)
+}
+
+private fun distanceBucket(km: Double): String = when {
+    km < 2 -> "within 2 km"
+    km < 5 -> "within 5 km"
+    else -> "within 10 km"
+}
+
+@Composable
+private fun SectionHeader(text: String) {
+    Text(
+        text,
+        fontFamily = FigtreeFamily,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 13.sp,
+        letterSpacing = 0.5.sp,
+        color = Neutral700
+    )
 }
