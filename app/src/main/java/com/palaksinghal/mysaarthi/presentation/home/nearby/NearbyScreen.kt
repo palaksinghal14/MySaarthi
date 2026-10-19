@@ -145,6 +145,14 @@ fun NearbyScreen(
                             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
 
                                 FilterChip(
+                                    "Seekers",
+                                    Icons.Filled.Person,
+                                    uiState.selectedFilter == NearbyFilter.SEEKERS
+                                ) {
+                                    selectedPlace = null
+                                    viewModel.selectFilter(NearbyFilter.SEEKERS)
+                                }
+                                FilterChip(
                                     "Places",
                                     Icons.Filled.LocationOn,
                                     uiState.selectedFilter == NearbyFilter.PLACES
@@ -153,14 +161,6 @@ fun NearbyScreen(
                                     viewModel.selectFilter(NearbyFilter.PLACES)
                                 }
 
-                                FilterChip(
-                                    "Seekers",
-                                    Icons.Filled.Person,
-                                    uiState.selectedFilter == NearbyFilter.SEEKERS
-                                ) {
-                                    selectedPlace = null
-                                    viewModel.selectFilter(NearbyFilter.SEEKERS)
-                                }
                             }
                         }
                         if (uiState.selectedFilter == NearbyFilter.PLACES) {
