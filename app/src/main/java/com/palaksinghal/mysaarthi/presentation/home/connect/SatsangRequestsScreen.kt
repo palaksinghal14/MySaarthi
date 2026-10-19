@@ -1,4 +1,4 @@
-package com.palaksinghal.mysaarthi.presentation.home.profile
+package com.palaksinghal.mysaarthi.presentation.home.connect
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -14,12 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -56,8 +52,7 @@ private enum class RequestTab { INCOMING, OUTGOING,CONNECTED }
 
 @Composable
 fun SatsangRequestsScreen(
-    onBack: () -> Unit,
-    viewModel: YouViewModel = hiltViewModel()
+    viewModel: SatsangRequestsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var selectedTab by remember { mutableStateOf(RequestTab.INCOMING) }
@@ -66,17 +61,14 @@ fun SatsangRequestsScreen(
 
         // Top bar
         Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 16.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = onBack) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = TextInk)
-            }
             Text(
-                text = "Satsang Requests",
+                text = "Connect",
                 fontFamily = CaprasimoFamily,
                 fontWeight = FontWeight.Normal,
-                fontSize = 20.sp,
+                fontSize = 22.sp,
                 color = TextInk
             )
         }
@@ -139,7 +131,7 @@ fun SatsangRequestsScreen(
                         items(uiState.connections) { connection ->
                             ConnectionCard(
                                 connection = connection,
-                                myUid = uiState.uid,
+                                myUid = uiState.myUid,
                                 getContactEmail = { uid -> viewModel.getContactEmail(uid) }
                             )
                         }
