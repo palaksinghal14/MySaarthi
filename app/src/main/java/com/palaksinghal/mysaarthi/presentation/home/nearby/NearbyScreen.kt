@@ -128,115 +128,161 @@ fun NearbyScreen(
                 }
             }
             else -> {
-                Column(modifier = Modifier.fillMaxSize()) {
-                    Column(
-                        modifier = Modifier.padding(horizontal = 24.dp, vertical = 20.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        Text("Nearby", fontFamily = CaprasimoFamily, fontWeight = FontWeight.Normal, fontSize = 28.sp, color = TextInk)
-                        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                            FilterChip("Places", Icons.Filled.LocationOn, uiState.selectedFilter == NearbyFilter.PLACES) { viewModel.selectFilter(NearbyFilter.PLACES) }
-                            FilterChip("Seekers", Icons.Filled.Person, uiState.selectedFilter == NearbyFilter.SEEKERS) { viewModel.selectFilter(NearbyFilter.SEEKERS) }
-                        }
-                    }
 
-                    Box {
-                        val userLatLng = LatLng(uiState.userLat, uiState.userLng)
-                        val cameraPositionState = rememberCameraPositionState {
-                            position = CameraPosition.fromLatLngZoom(userLatLng, 13f)
-                        }
-
-                        GoogleMap(
-                            modifier = Modifier.fillMaxWidth().height(320.dp),
-                            cameraPositionState = cameraPositionState,
-                            properties = MapProperties(isMyLocationEnabled = false, /*mapStyleOptions = mapStyleOptions*/),
-                            uiSettings = MapUiSettings(zoomControlsEnabled = false, myLocationButtonEnabled = false, mapToolbarEnabled = false)
+                Box(modifier = Modifier.fillMaxSize()) {
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        Column(
+                            modifier = Modifier.padding(horizontal = 24.dp, vertical = 20.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
-                            MarkerComposable(state = MarkerState(position = userLatLng)) {
-                                Box(modifier = Modifier.size(28.dp).clip(CircleShape).background(Bg), contentAlignment = Alignment.Center) {
-                                    Box(modifier = Modifier.size(16.dp).clip(CircleShape).background(Accent))
-                                }
-                            }
+                            Text(
+                                "Nearby",
+                                fontFamily = CaprasimoFamily,
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 28.sp,
+                                color = TextInk
+                            )
+                            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
 
-                            if (uiState.selectedFilter == NearbyFilter.PLACES) {
-                                uiState.temples.forEach { temple ->
-                                    MarkerComposable(
-                                        state = MarkerState(position = LatLng(temple.lat, temple.lng)),
-                                        onClick = {
-                                            selectedPlace = SelectedPlace.Temple(temple)
-                                            true // consume the click, don't move camera
-                                        }
-                                    ) { TempleMarkerIcon() }
+                                FilterChip(
+                                    "Places",
+                                    Icons.Filled.LocationOn,
+                                    uiState.selectedFilter == NearbyFilter.PLACES
+                                ) {
+                                    selectedPlace = null
+                                    viewModel.selectFilter(NearbyFilter.PLACES)
                                 }
-                            }
 
-                            if (uiState.selectedFilter == NearbyFilter.SEEKERS) {
-                                uiState.seekers.forEach { seeker ->
-                                    MarkerComposable(
-                                        state = MarkerState(position = LatLng(seeker.lat, seeker.lng)),
-                                        onClick = {
-                                            selectedPlace = SelectedPlace.Seeker(seeker)
-                                            true
-                                        }
-                                    ) { SeekerMarkerIcon() }
+                                FilterChip(
+                                    "Seekers",
+                                    Icons.Filled.Person,
+                                    uiState.selectedFilter == NearbyFilter.SEEKERS
+                                ) {
+                                    selectedPlace = null
+                                    viewModel.selectFilter(NearbyFilter.SEEKERS)
                                 }
                             }
                         }
-
-                        // Info card overlay — shows on top of the map when something is selected
-                        selectedPlace?.let { place ->
-                            Box(modifier = Modifier.align(Alignment.BottomCenter).padding(16.dp)) {
-                                val status = (place as? SelectedPlace.Seeker)?.seeker?.uid?.let { uid ->
-                                    uiState.seekerConnectionStates[uid]
+                        if (uiState.selectedFilter == NearbyFilter.PLACES) {
+                            Box {
+                                val userLatLng = LatLng(uiState.userLat, uiState.userLng)
+                                val cameraPositionState = rememberCameraPositionState {
+                                    position = CameraPosition.fromLatLngZoom(userLatLng, 13f)
                                 }
-                                PlaceInfoCard(
-                                    place = place,
-                                    onDismiss = { selectedPlace = null },
-                                    onGetDirections = { lat, lng ->
-                                        val uri = Uri.parse("google.navigation:q=$lat,$lng")
-                                        val intent = Intent(Intent.ACTION_VIEW, uri).apply {
-                                            setPackage("com.google.android.apps.maps")
-                                        }
-                                        try {
-                                            context.startActivity(intent)
-                                        } catch (e: Exception) {
-                                            // Google Maps app not installed — fall back to browser
-                                            val browserUri = Uri.parse(
-                                                "https://www.google.com/maps/dir/?api=1&destination=$lat,$lng"
+
+                                GoogleMap(
+                                    modifier = Modifier.fillMaxWidth().height(320.dp),
+                                    cameraPositionState = cameraPositionState,
+                                    properties = MapProperties(isMyLocationEnabled = false, /*mapStyleOptions = mapStyleOptions*/),
+                                    uiSettings = MapUiSettings(
+                                        zoomControlsEnabled = false,
+                                        myLocationButtonEnabled = false,
+                                        mapToolbarEnabled = false
+                                    )
+                                ) {
+                                    MarkerComposable(state = MarkerState(position = userLatLng)) {
+                                        Box(
+                                            modifier = Modifier.size(28.dp).clip(CircleShape)
+                                                .background(Bg), contentAlignment = Alignment.Center
+                                        ) {
+                                            Box(
+                                                modifier = Modifier.size(16.dp).clip(CircleShape)
+                                                    .background(Accent)
                                             )
-                                            context.startActivity(Intent(Intent.ACTION_VIEW, browserUri))
-                                        }
-                                    },
-                                    requestStatus = status,
-                                    onSendRequest = {
-                                        if (place is SelectedPlace.Seeker) {
-                                            viewModel.sendSatsangRequest(place.seeker.uid, place.seeker.displayName)
                                         }
                                     }
-                                )
+
+
+                                    uiState.temples.forEach { temple ->
+                                        MarkerComposable(
+                                            state = MarkerState(
+                                                position = LatLng(
+                                                    temple.lat,
+                                                    temple.lng
+                                                )
+                                            ),
+                                            onClick = {
+                                                selectedPlace = SelectedPlace.Temple(temple)
+                                                true // consume the click, don't move camera
+                                            }
+                                        ) { TempleMarkerIcon() }
+                                    }
+                                }
+                            }
+                        }
+
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize()
+                                .padding(horizontal = 24.dp, vertical = 16.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            if (uiState.selectedFilter == NearbyFilter.PLACES) {
+                                if (uiState.temples.isEmpty()) item { EmptyStateText("No spiritual places found nearby.") }
+                                else items(uiState.temples) { temple ->
+                                    TempleListItem(
+                                        temple,
+                                        onClick = { selectedPlace = SelectedPlace.Temple(temple) })
+                                }
+                            } else {
+                                if (!uiState.isOpenToSatsang) {
+                                    item { EmptyStateText("Turn on \"Open to Connect\" in your profile to discover nearby seekers.") }
+                                } else if (uiState.seekers.isEmpty()) {
+                                    item { EmptyStateText("No seekers found nearby yet.") }
+                                } else {
+                                    items(uiState.seekers) { seeker ->
+                                        SeekerListItem(
+                                            seeker,
+                                            onClick = {
+                                                selectedPlace = SelectedPlace.Seeker(seeker)
+                                            })
+                                    }
+                                }
                             }
                         }
                     }
 
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize().padding(horizontal = 24.dp, vertical = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        if (uiState.selectedFilter == NearbyFilter.PLACES) {
-                            if (uiState.temples.isEmpty()) item { EmptyStateText("No spiritual places found nearby.") }
-                            else items(uiState.temples) { temple ->
-                                TempleListItem(temple, onClick = { selectedPlace = SelectedPlace.Temple(temple) })
-                            }
-                        } else {
-                            if (!uiState.isOpenToSatsang) {
-                                item { EmptyStateText("Turn on \"Open to Satsang\" in your profile to discover nearby seekers.") }
-                            } else if (uiState.seekers.isEmpty()) {
-                                item { EmptyStateText("No seekers found nearby yet.") }
-                            } else {
-                                items(uiState.seekers) { seeker ->
-                                    SeekerListItem(seeker, onClick = { selectedPlace = SelectedPlace.Seeker(seeker) })
+                    // Info card overlay — shows on top of the map when something is selected
+                    selectedPlace?.let { place ->
+                        Box(
+                            modifier = Modifier.align(Alignment.BottomCenter).padding(16.dp)
+                        ) {
+                            val status =
+                                (place as? SelectedPlace.Seeker)?.seeker?.uid?.let { uid ->
+                                    uiState.seekerConnectionStates[uid]
                                 }
-                            }
+                            PlaceInfoCard(
+                                place = place,
+                                onDismiss = { selectedPlace = null },
+                                onGetDirections = { lat, lng ->
+                                    val uri = Uri.parse("google.navigation:q=$lat,$lng")
+                                    val intent = Intent(Intent.ACTION_VIEW, uri).apply {
+                                        setPackage("com.google.android.apps.maps")
+                                    }
+                                    try {
+                                        context.startActivity(intent)
+                                    } catch (e: Exception) {
+                                        // Google Maps app not installed — fall back to browser
+                                        val browserUri = Uri.parse(
+                                            "https://www.google.com/maps/dir/?api=1&destination=$lat,$lng"
+                                        )
+                                        context.startActivity(
+                                            Intent(
+                                                Intent.ACTION_VIEW,
+                                                browserUri
+                                            )
+                                        )
+                                    }
+                                },
+                                requestStatus = status,
+                                onSendRequest = {
+                                    if (place is SelectedPlace.Seeker) {
+                                        viewModel.sendSatsangRequest(
+                                            place.seeker.uid,
+                                            place.seeker.displayName
+                                        )
+                                    }
+                                }
+                            )
                         }
                     }
                 }
@@ -250,7 +296,7 @@ private fun PlaceInfoCard(
     place: SelectedPlace,
     onDismiss: () -> Unit,
     onGetDirections: (lat: Double, lng: Double) -> Unit,
-    requestStatus: SeekerConnectionState??,
+    requestStatus: SeekerConnectionState?,
     onSendRequest: () -> Unit
 ) {
     Surface(
@@ -351,13 +397,6 @@ private fun TempleMarkerIcon() {
 }
 
 @Composable
-private fun SeekerMarkerIcon() {
-    Box(modifier = Modifier.size(40.dp).clip(CircleShape).background(Sage600), contentAlignment = Alignment.Center) {
-        Icon(Icons.Filled.Person, null, tint = Bg, modifier = Modifier.size(20.dp))
-    }
-}
-
-@Composable
 private fun TempleListItem(temple: NearbyTemple, onClick: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth().clickable { onClick() },
@@ -386,7 +425,7 @@ private fun SeekerListItem(seeker: NearbySeeker, onClick: () -> Unit) {
         }
         Column {
             Text("${seeker.displayName} · ${seeker.howLongOnPath}", fontFamily = FigtreeFamily, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = TextInk)
-            Text("%.1f km · open to satsang".format(seeker.distanceKm), fontFamily = FigtreeFamily, fontSize = 12.sp, color = Neutral400)
+            Text("%.1f km · open to Connect".format(seeker.distanceKm), fontFamily = FigtreeFamily, fontSize = 12.sp, color = Neutral400)
         }
     }
 }
