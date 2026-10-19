@@ -2,22 +2,65 @@ package com.palaksinghal.mysaarthi.data.repository
 
 import com.google.firebase.firestore.FirebaseFirestore
 import com.palaksinghal.mysaarthi.core.utils.toAppException
+import com.palaksinghal.mysaarthi.di.ApplicationScope
 import com.palaksinghal.mysaarthi.domain.model.AppException
 import com.palaksinghal.mysaarthi.domain.model.SatsangRequest
 import com.palaksinghal.mysaarthi.domain.repository.AuthenticationRepo
 import com.palaksinghal.mysaarthi.domain.repository.SatsangRequestRepository
 import com.palaksinghal.mysaarthi.domain.repository.UserProfileRepo
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class SatsangReqRepoImpl @Inject constructor(
     private val auth: AuthenticationRepo,
     private val userRepo: UserProfileRepo,
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
+    @ApplicationScope private val appScope: CoroutineScope
 ) : SatsangRequestRepository {
+
+    // Shared flows — ONE Firestore listener each, no matter how many
+    // ViewModels collect them.
+
+    private val incomingShared: StateFlow<List<SatsangRequest>> =
+        incomingRequestsFlow().stateIn(
+            scope = appScope,
+            started = SharingStarted.WhileSubscribed(
+                stopTimeoutMillis = 5_000,
+                replayExpirationMillis = 0
+            ),
+            initialValue = emptyList()
+        )
+
+    private val outgoingShared: StateFlow<List<SatsangRequest>> =
+        outgoingRequestsFlow().stateIn(
+            scope = appScope,
+            started = SharingStarted.WhileSubscribed(
+                stopTimeoutMillis = 5_000,
+                replayExpirationMillis = 0
+            ),
+            initialValue = emptyList()
+        )
+
+    private val connectedShared: StateFlow<List<SatsangRequest>> =
+        connectedUsersFlow().stateIn(
+            scope = appScope,
+            started = SharingStarted.WhileSubscribed(
+                stopTimeoutMillis = 5_000,
+                replayExpirationMillis = 0
+            ),
+            initialValue = emptyList()
+        )
+
+    override fun getIncomingSatsangReq(): Flow<List<SatsangRequest>> = incomingShared
+    override fun getOutgoingSatsangReq(): Flow<List<SatsangRequest>> = outgoingShared
+    override fun getConnectedUsers(): Flow<List<SatsangRequest>> = connectedShared
 
     override suspend fun sendSatsangReq(toUid: String, toDisplayName: String): Result<Unit> {
 
@@ -49,7 +92,9 @@ class SatsangReqRepoImpl @Inject constructor(
 
     }
 
-    override fun getIncomingSatsangReq(): Flow<List<SatsangRequest>> = callbackFlow {
+    // The raw listeners — unchanged from your original code, just
+    // made private so only the shared flows above can start them.
+    private fun incomingRequestsFlow(): Flow<List<SatsangRequest>> = callbackFlow {
         val currentUid= auth.getCurrentUserId() ?: run{
             close()
             return@callbackFlow
@@ -74,7 +119,7 @@ class SatsangReqRepoImpl @Inject constructor(
 
     }
 
-    override fun getOutgoingSatsangReq(): Flow<List<SatsangRequest>> = callbackFlow {
+    private fun outgoingRequestsFlow(): Flow<List<SatsangRequest>> = callbackFlow {
 
         val currentUid= auth.getCurrentUserId() ?: run{
             close()
@@ -113,7 +158,7 @@ class SatsangReqRepoImpl @Inject constructor(
         }
     }
 
-    override fun getConnectedUsers(): Flow<List<SatsangRequest>> = callbackFlow {
+    private fun connectedUsersFlow(): Flow<List<SatsangRequest>> = callbackFlow {
         val currentUid = auth.getCurrentUserId() ?: run {
             close()
             return@callbackFlow
