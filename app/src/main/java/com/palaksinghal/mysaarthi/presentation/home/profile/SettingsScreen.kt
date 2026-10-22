@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.palaksinghal.mysaarthi.BuildConfig
 import com.palaksinghal.mysaarthi.presentation.home.profile.SettingsViewModel
 import com.palaksinghal.mysaarthi.presentation.theme.Accent
 import com.palaksinghal.mysaarthi.presentation.theme.Bg
@@ -113,7 +114,7 @@ fun SettingsScreen(
         ) {
             // ABOUT section
             SettingsSection(title = "ABOUT") {
-                SettingsRow(label = "Version", value = "1.0.0")
+                SettingsRow(label = "Version", value = "${BuildConfig.VERSION_NAME}")
                 SettingsDivider()
                 SettingsRow(label = "Built with", value = "Kotlin + Jetpack Compose")
             }
