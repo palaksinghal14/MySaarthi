@@ -2,6 +2,8 @@ package com.palaksinghal.mysaarthi.presentation.home
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -12,15 +14,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.palaksinghal.mysaarthi.R
 import com.palaksinghal.mysaarthi.core.navigation.ScreenRoutes
-import com.palaksinghal.mysaarthi.presentation.home.profile.SatsangRequestsScreen
+import com.palaksinghal.mysaarthi.presentation.home.connect.ConnectScreen
+import com.palaksinghal.mysaarthi.presentation.home.connect.chat.ChatScreen
+import com.palaksinghal.mysaarthi.presentation.home.connect.requests.SatsangRequestsScreen
 import com.palaksinghal.mysaarthi.presentation.home.profile.YouScreen
 import com.palaksinghal.mysaarthi.presentation.home.today.EveningCheckInScreen
 import com.palaksinghal.mysaarthi.presentation.home.today.SadhanaDetailScreen
@@ -43,24 +53,30 @@ data class BottomNavItem(
 
 @Composable
 fun HomeShell(
-    onSignOut:()->Unit
+    onSignOut:()->Unit,
+    viewModel: HomeShellViewModel = hiltViewModel()
 ) {
     val tabNavController = rememberNavController()
     val navBackStackEntry by tabNavController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    // Only show bottom bar on the three main tab routes
+    val connectBadgeCount by viewModel.connectBadgeCount.collectAsStateWithLifecycle()
+
+    // Only show bottom bar on the four main tab routes
     // Hide it on detail screens like ShlokaDetail, SadhanaDetail etc.
     val showBottomBar = currentDestination?.route in listOf(
         ScreenRoutes.Today.route,
         ScreenRoutes.Nearby.route,
-        ScreenRoutes.You.route
+        ScreenRoutes.You.route,
+        ScreenRoutes.Connect.route
     )
 
     val tabs = listOf(
         BottomNavItem(ScreenRoutes.Today.route, "Today", R.drawable.ic_brahma_muhurta),
         BottomNavItem(ScreenRoutes.Nearby.route, "Nearby", R.drawable.ic_location),
+        BottomNavItem(ScreenRoutes.Connect.route, "Connect", icon= R.drawable.ic_face),
         BottomNavItem(ScreenRoutes.You.route, "You", R.drawable.ic_satsang)
+
     )
 
     Scaffold(
@@ -69,12 +85,16 @@ fun HomeShell(
             if(showBottomBar) {
                 NavigationBar(
                     containerColor = Bg,
-                    tonalElevation = androidx.compose.ui.unit.Dp(0f)
+                    tonalElevation = Dp(0f)
                 ) {
                     tabs.forEach { tab ->
                         val isSelected = currentDestination?.hierarchy?.any {
                             it.route == tab.route
                         } == true
+
+                        val badgeCount =
+                            if (tab.route == ScreenRoutes.Connect.route) connectBadgeCount
+                            else 0
 
                         NavigationBarItem(
                             selected = isSelected,
@@ -88,10 +108,32 @@ fun HomeShell(
                                 }
                             },
                             icon = {
-                                Icon(
-                                    painter = painterResource(id = tab.icon),
-                                    contentDescription = tab.label
-                                )
+                                if(badgeCount>0){
+                                    BadgedBox(
+                                        badge = {
+                                            Badge (
+                                                containerColor = Accent,
+                                                contentColor = Bg
+                                            ){
+                                                Text(
+                                                    text = if (badgeCount > 99) "99+" else "$badgeCount",
+                                                    fontFamily = FigtreeFamily,
+                                                    fontSize = 10.sp
+                                                )
+                                            }
+                                        }
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(id = tab.icon),
+                                            contentDescription = tab.label
+                                        )
+                                    }
+                                } else {
+                                    Icon(
+                                        painter = painterResource(id = tab.icon),
+                                        contentDescription = tab.label
+                                    )
+                                }
                             },
                             label = {
                                 Text(
@@ -153,11 +195,35 @@ fun HomeShell(
                 },
                 onNavigateToSettings = {
                     tabNavController.navigate(ScreenRoutes.Settings.route)
-                },
-                    onNavigateToSatsangRequests = {
+                }
+               )
+            }
+
+            composable(ScreenRoutes.Connect.route) {
+                ConnectScreen(
+                    onOpenChat = { convId, otherUid ->
+                        tabNavController.navigate(ScreenRoutes.Chat.createRoute(convId, otherUid))
+                    },
+                    onOpenRequests = {
                         tabNavController.navigate(ScreenRoutes.SatsangRequests.route)
                     }
-               )
+                )
+            }
+
+            composable(ScreenRoutes.SatsangRequests.route) {
+                SatsangRequestsScreen(
+                    onBack = { tabNavController.popBackStack() }
+                )
+            }
+
+            composable(
+                route = ScreenRoutes.Chat.route,
+                arguments = listOf(
+                    navArgument(ScreenRoutes.Chat.ARG_CONV_ID) { type = NavType.StringType },
+                    navArgument(ScreenRoutes.Chat.ARG_OTHER_UID) { type = NavType.StringType }
+                )
+            ) {
+                ChatScreen(onBack = { tabNavController.popBackStack() })
             }
 
             composable(ScreenRoutes.EditProfile.route) {
@@ -171,9 +237,7 @@ fun HomeShell(
                     onSignOut =  onSignOut
                 )
             }
-            composable(ScreenRoutes.SatsangRequests.route) {
-                SatsangRequestsScreen(onBack = { tabNavController.popBackStack() })
-            }
         }
     }
 }
+

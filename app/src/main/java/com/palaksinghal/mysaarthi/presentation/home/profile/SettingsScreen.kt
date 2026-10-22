@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
@@ -23,6 +24,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -37,10 +40,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.palaksinghal.mysaarthi.BuildConfig
 import com.palaksinghal.mysaarthi.presentation.home.profile.SettingsViewModel
 import com.palaksinghal.mysaarthi.presentation.theme.Accent
 import com.palaksinghal.mysaarthi.presentation.theme.Bg
@@ -61,6 +67,8 @@ fun SettingsScreen(
     var showSignOutDialog by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    var password by remember { mutableStateOf("") }
 
     LaunchedEffect(uiState.deleteSuccess) {
         if (uiState.deleteSuccess) {
@@ -106,7 +114,7 @@ fun SettingsScreen(
         ) {
             // ABOUT section
             SettingsSection(title = "ABOUT") {
-                SettingsRow(label = "Version", value = "1.0.0")
+                SettingsRow(label = "Version", value = "${BuildConfig.VERSION_NAME}")
                 SettingsDivider()
                 SettingsRow(label = "Built with", value = "Kotlin + Jetpack Compose")
             }
@@ -182,6 +190,7 @@ fun SettingsScreen(
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.error
                     )
+
                 }
             },
             dismissButton = {
@@ -211,6 +220,38 @@ fun SettingsScreen(
                         fontFamily = FigtreeFamily,
                         color = Neutral700
                     )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    OutlinedTextField(
+                        value = password,
+                        onValueChange = { password = it },
+                        label = {
+                            Text(
+                                "Confirm your password",
+                                fontFamily = FigtreeFamily,
+                                fontSize = 13.sp
+                            )
+                        },
+                        visualTransformation = PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        singleLine = true,
+                        enabled = !uiState.isDeleting,
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = TextInk,
+                            unfocusedTextColor = TextInk,
+                            focusedContainerColor = Surface,
+                            unfocusedContainerColor = Surface,
+                            cursorColor = Accent,
+                            focusedBorderColor = Accent,
+                            unfocusedBorderColor = Neutral300,
+                            focusedLabelColor = Accent,
+                            unfocusedLabelColor = Neutral700
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
                     if (uiState.error != null) {
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(
@@ -224,8 +265,8 @@ fun SettingsScreen(
             },
             confirmButton = {
                 TextButton(
-                    onClick = { viewModel.deleteAccount() },
-                    enabled = !uiState.isDeleting
+                    onClick = { viewModel.deleteAccount(password) },
+                    enabled = !uiState.isDeleting && password.isNotBlank()
                 ) {
                     if (uiState.isDeleting) {
                         CircularProgressIndicator(
@@ -245,7 +286,9 @@ fun SettingsScreen(
             },
             dismissButton = {
                 TextButton(
-                    onClick = { showDeleteDialog = false },
+                    onClick = { showDeleteDialog = false
+                        password = ""
+                              },
                     enabled = !uiState.isDeleting
                 ) {
                     Text("Cancel", fontFamily = FigtreeFamily, color = Neutral700)

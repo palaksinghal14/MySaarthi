@@ -21,8 +21,7 @@ import javax.inject.Inject
 class YouViewModel @Inject constructor(
     private val authRepo: AuthenticationRepo,
     private val userProfileRepo: UserProfileRepo,
-    private val sadhanaDao: SadhanaDao,
-    private val satsangRequestRepository: SatsangRequestRepository
+    private val sadhanaDao: SadhanaDao
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(YouUiState())
@@ -31,9 +30,6 @@ class YouViewModel @Inject constructor(
     init {
         observeProfile()
         loadStreakData()
-        observeIncomingRequests()
-        observeOutgoingRequests()
-        observeConnections()
     }
 
     fun observeProfile(){
@@ -123,43 +119,4 @@ class YouViewModel @Inject constructor(
         }
     }
 
-    fun observeIncomingRequests(){
-        viewModelScope.launch {
-            satsangRequestRepository.getIncomingSatsangReq()
-                .catch { }
-                .collect { requests ->
-                _uiState.update { it.copy(incomingRequests = requests.filter { request -> request.status== SatsangRequestStatus.PENDING }) }
-            }
-        }
-    }
-
-    fun observeOutgoingRequests(){
-        viewModelScope.launch {
-            satsangRequestRepository.getOutgoingSatsangReq()
-                .catch { }
-                .collect { requests ->
-                _uiState.update { it.copy(outgoingRequests = requests.filter { request -> request.status!= SatsangRequestStatus.ACCEPTED }) }
-            }
-        }
-    }
-
-    fun respondToRequest(requestId: String, accept: Boolean){
-        viewModelScope.launch {
-            satsangRequestRepository.respondToRequest(requestId, accept)
-        }
-    }
-
-    suspend fun getContactEmail(uid: String): String {
-        return userProfileRepo.getUserProfile(uid).getOrNull()?.email ?: ""
-    }
-
-    private fun observeConnections() {
-        viewModelScope.launch {
-            satsangRequestRepository.getConnectedUsers()
-                .catch { }
-                .collect { connections ->
-                _uiState.update { it.copy(connections = connections) }
-            }
-        }
-    }
 }

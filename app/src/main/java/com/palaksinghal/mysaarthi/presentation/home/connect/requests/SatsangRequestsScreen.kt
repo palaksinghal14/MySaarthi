@@ -1,4 +1,4 @@
-package com.palaksinghal.mysaarthi.presentation.home.profile
+package com.palaksinghal.mysaarthi.presentation.home.connect.requests
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -14,12 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -52,12 +48,12 @@ import com.palaksinghal.mysaarthi.presentation.theme.Terracotta100
 import com.palaksinghal.mysaarthi.presentation.theme.Terracotta700
 import com.palaksinghal.mysaarthi.presentation.theme.TextInk
 
-private enum class RequestTab { INCOMING, OUTGOING,CONNECTED }
+private enum class RequestTab { INCOMING, OUTGOING }
 
 @Composable
 fun SatsangRequestsScreen(
     onBack: () -> Unit,
-    viewModel: YouViewModel = hiltViewModel()
+    viewModel: SatsangRequestsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var selectedTab by remember { mutableStateOf(RequestTab.INCOMING) }
@@ -66,17 +62,14 @@ fun SatsangRequestsScreen(
 
         // Top bar
         Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 16.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = onBack) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = TextInk)
-            }
             Text(
                 text = "Satsang Requests",
                 fontFamily = CaprasimoFamily,
                 fontWeight = FontWeight.Normal,
-                fontSize = 20.sp,
+                fontSize = 22.sp,
                 color = TextInk
             )
         }
@@ -96,10 +89,6 @@ fun SatsangRequestsScreen(
                 isSelected = selectedTab == RequestTab.OUTGOING,
                 onClick = { selectedTab = RequestTab.OUTGOING }
             )
-            TabChip(label="Connected (${uiState.connections.size})",
-                isSelected = selectedTab == RequestTab.CONNECTED,
-                onClick = { selectedTab = RequestTab.CONNECTED }
-            )
 
         }
 
@@ -115,8 +104,8 @@ fun SatsangRequestsScreen(
                         items(uiState.incomingRequests) { request ->
                             IncomingRequestCard(
                                 request = request,
-                                onAccept = { viewModel.respondToRequest(request.requestId, true) },
-                                onDecline = { viewModel.respondToRequest(request.requestId, false) }
+                                onAccept = { viewModel.respondToRequest(request, true) },
+                                onDecline = { viewModel.respondToRequest(request, false) }
                             )
                         }
                     }
@@ -132,19 +121,7 @@ fun SatsangRequestsScreen(
                         }
                     }
                 }
-                RequestTab.CONNECTED -> {
-                    if (uiState.connections.isEmpty()) {
-                        item { EmptyState("No connections yet. Accepted requests will show up here.") }
-                    } else {
-                        items(uiState.connections) { connection ->
-                            ConnectionCard(
-                                connection = connection,
-                                myUid = uiState.uid,
-                                getContactEmail = { uid -> viewModel.getContactEmail(uid) }
-                            )
-                        }
-                    }
-                }
+
             }
         }
     }
@@ -247,47 +224,6 @@ private fun OutgoingRequestCard(request: SatsangRequest) {
                 fontSize = 13.sp,
                 color = statusColor
             )
-        }
-    }
-}
-
-@Composable
-private fun ConnectionCard(
-    connection: SatsangRequest,
-    myUid: String,
-    getContactEmail: suspend (String) -> String
-) {
-    val (otherUid, otherName) = connection.otherPerson(myUid)
-    var email by remember { mutableStateOf<String?>(null) }
-
-    LaunchedEffect(otherUid) {
-        email = getContactEmail(otherUid)
-    }
-
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        color = Sage100,
-        border = BorderStroke(1.dp, Sage600)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = otherName,
-                fontFamily = FigtreeFamily,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 15.sp,
-                color = TextInk
-            )
-            if (!email.isNullOrBlank()) {
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "Contact: $email",
-                    fontFamily = FigtreeFamily,
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 13.sp,
-                    color = Sage600
-                )
-            }
         }
     }
 }

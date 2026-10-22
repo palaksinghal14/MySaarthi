@@ -34,20 +34,16 @@ class SettingsViewModel @Inject constructor(
         authRepo.logout()
     }
 
-    fun deleteAccount() {
+    fun deleteAccount(password: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(isDeleting = true, error = null) }
 
             val uid = authRepo.getCurrentUserId()
             if (uid == null) {
-                _uiState.update {
-                    it.copy(isDeleting = false, error = AppException.UserNotFoundException)
-                }
+                _uiState.update { it.copy(isDeleting = false, error = AppException.UserNotFoundException) }
                 return@launch
             }
-
-            // Delete Firestore + Room data first
-            userProfileRepo.deleteAllUserData(uid)
+            authRepo.reauthenticate(password)
                 .onFailure { throwable ->
                     val exception = throwable as? AppException
                         ?: AppException.UnknownException(throwable.message)
@@ -55,9 +51,10 @@ class SettingsViewModel @Inject constructor(
                     return@launch
                 }
 
-            // Then delete the Firebase Auth account itself
+            // Auth first — the Function cleans up Firestore server-side.
             authRepo.deleteAccount()
                 .onSuccess {
+                    userProfileRepo.clearLocalData(uid)
                     _uiState.update { it.copy(isDeleting = false, deleteSuccess = true) }
                 }
                 .onFailure { throwable ->

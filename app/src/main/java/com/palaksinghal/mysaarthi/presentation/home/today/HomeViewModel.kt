@@ -1,5 +1,4 @@
-package com.palaksinghal.mysaarthi.presentation.home
-
+package com.palaksinghal.mysaarthi.presentation.home.today
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,6 +7,7 @@ import com.palaksinghal.mysaarthi.domain.repository.AuthenticationRepo
 import com.palaksinghal.mysaarthi.domain.repository.SadhanaRepository
 import com.palaksinghal.mysaarthi.domain.repository.ShlokaRepo
 import com.palaksinghal.mysaarthi.domain.repository.UserProfileRepo
+import com.palaksinghal.mysaarthi.presentation.home.today.HomeUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -7,12 +7,14 @@ import com.palaksinghal.mysaarthi.domain.model.NearbyTemple
 enum class NearbyFilter { PLACES, SEEKERS }
 enum class SeekerConnectionState { NONE, PENDING, CONNECTED, DECLINED }
 
+const val NEAR_RADIUS_KM = 10.0
+
 data class NearbyUiState(
     val isLoading: Boolean = true,
     val seekers: List<NearbySeeker> = emptyList(),
     val temples: List<NearbyTemple> = emptyList(),
     val error: AppException? = null,
-    val selectedFilter: NearbyFilter = NearbyFilter.PLACES,
+    val selectedFilter: NearbyFilter = NearbyFilter.SEEKERS,
     val userLat: Double = 0.0,
     val userLng: Double = 0.0,
     val seekerConnectionStates: Map<String, SeekerConnectionState> = emptyMap(),
@@ -21,4 +23,5 @@ data class NearbyUiState(
     // true so we don't briefly flash the "closed" message before the first
     // load resolves (isLoading gates the whole screen until then anyway).
     val isOpenToSatsang: Boolean = true
+
 )

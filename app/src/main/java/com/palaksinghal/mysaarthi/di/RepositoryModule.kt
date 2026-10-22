@@ -1,6 +1,7 @@
 package com.palaksinghal.mysaarthi.di
 
 import com.palaksinghal.mysaarthi.data.repository.AuthenticationRepoImp
+import com.palaksinghal.mysaarthi.data.repository.ChatRepoImpl
 import com.palaksinghal.mysaarthi.data.repository.LocationRepoImpl
 import com.palaksinghal.mysaarthi.data.repository.NearbyRepositoryImpl
 import com.palaksinghal.mysaarthi.data.repository.SadhanaRepositoryImpl
@@ -8,6 +9,7 @@ import com.palaksinghal.mysaarthi.data.repository.SatsangReqRepoImpl
 import com.palaksinghal.mysaarthi.data.repository.ShlokaRepoImpl
 import com.palaksinghal.mysaarthi.data.repository.UserProfileRepoImpl
 import com.palaksinghal.mysaarthi.domain.repository.AuthenticationRepo
+import com.palaksinghal.mysaarthi.domain.repository.ChatRepository
 import com.palaksinghal.mysaarthi.domain.repository.LocationRepository
 import com.palaksinghal.mysaarthi.domain.repository.NearbyRepository
 import com.palaksinghal.mysaarthi.domain.repository.SadhanaRepository
@@ -51,5 +53,9 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindsSatsangReqRepository(impl: SatsangReqRepoImpl) : SatsangRequestRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindsChatRepository(impl: ChatRepoImpl) : ChatRepository
 }
 

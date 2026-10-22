@@ -15,8 +15,5 @@ data class YouUiState(
     val currentStreak: Int = 0,
     val longestStreak: Int = 0,
     val daysPracticed: Int = 0,
-    val last30Days: List<Float> = emptyList(),
-    val incomingRequests: List<SatsangRequest> = emptyList(),
-    val outgoingRequests: List<SatsangRequest> = emptyList(),
-    val connections :List<SatsangRequest> =emptyList()
+    val last30Days: List<Float> = emptyList()
 )

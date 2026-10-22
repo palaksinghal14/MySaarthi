@@ -31,3 +31,10 @@
     <fields>;
     <methods>;
 }
+
+-keepclassmembers class com.palaksinghal.mysaarthi.data.remote.dto.** {
+    <init>();
+    <fields>;
+    *** get*();
+    *** set*();
+}

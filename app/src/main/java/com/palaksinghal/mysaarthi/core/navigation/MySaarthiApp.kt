@@ -2,6 +2,7 @@ package com.palaksinghal.mysaarthi.core.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -100,7 +101,7 @@ fun MySaarthiApp(){
              HomeShell(
                  onSignOut = {
                      mainNavController.navigate(ScreenRoutes.Welcome.route){
-                         popUpTo(mainNavController.graph.id){inclusive=true}
+                         popUpTo(ScreenRoutes.Home.route){inclusive=true}
                          launchSingleTop = true
                      }
                  }
