@@ -19,7 +19,6 @@ import javax.inject.Inject
 @HiltViewModel
 class SatsangRequestsViewModel @Inject constructor(
     private val authRepo: AuthenticationRepo,
-    private val userProfileRepo: UserProfileRepo,
     private val satsangRequestRepository: SatsangRequestRepository
 ) : ViewModel() {
 
@@ -27,15 +26,12 @@ class SatsangRequestsViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     init {
-        loadMyUid()
+
         observeIncomingRequests()
         observeOutgoingRequests()
-        observeConnections()
     }
 
-    private fun loadMyUid() {
-        _uiState.update { it.copy(myUid = authRepo.getCurrentUserId() ?: "") }
-    }
+
 
     private fun observeIncomingRequests() {
         viewModelScope.launch {
@@ -64,15 +60,7 @@ class SatsangRequestsViewModel @Inject constructor(
         }
     }
 
-    private fun observeConnections() {
-        viewModelScope.launch {
-            satsangRequestRepository.getConnectedUsers()
-                .catch { }
-                .collect { connections ->
-                    _uiState.update { it.copy(connections = connections) }
-                }
-        }
-    }
+
 
     fun respondToRequest(request : SatsangRequest, accept: Boolean) {
         viewModelScope.launch {
@@ -80,7 +68,5 @@ class SatsangRequestsViewModel @Inject constructor(
         }
     }
 
-    suspend fun getContactEmail(uid: String): String {
-        return userProfileRepo.getUserProfile(uid).getOrNull()?.email ?: ""
-    }
+
 }

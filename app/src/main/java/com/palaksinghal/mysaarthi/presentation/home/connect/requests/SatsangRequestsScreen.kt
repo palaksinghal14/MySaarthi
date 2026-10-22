@@ -48,10 +48,11 @@ import com.palaksinghal.mysaarthi.presentation.theme.Terracotta100
 import com.palaksinghal.mysaarthi.presentation.theme.Terracotta700
 import com.palaksinghal.mysaarthi.presentation.theme.TextInk
 
-private enum class RequestTab { INCOMING, OUTGOING,CONNECTED }
+private enum class RequestTab { INCOMING, OUTGOING }
 
 @Composable
 fun SatsangRequestsScreen(
+    onBack: () -> Unit,
     viewModel: SatsangRequestsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -65,7 +66,7 @@ fun SatsangRequestsScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Connect",
+                text = "Satsang Requests",
                 fontFamily = CaprasimoFamily,
                 fontWeight = FontWeight.Normal,
                 fontSize = 22.sp,
@@ -87,10 +88,6 @@ fun SatsangRequestsScreen(
                 label = "Sent (${uiState.outgoingRequests.size})",
                 isSelected = selectedTab == RequestTab.OUTGOING,
                 onClick = { selectedTab = RequestTab.OUTGOING }
-            )
-            TabChip(label="Connected (${uiState.connections.size})",
-                isSelected = selectedTab == RequestTab.CONNECTED,
-                onClick = { selectedTab = RequestTab.CONNECTED }
             )
 
         }
@@ -124,19 +121,7 @@ fun SatsangRequestsScreen(
                         }
                     }
                 }
-                RequestTab.CONNECTED -> {
-                    if (uiState.connections.isEmpty()) {
-                        item { EmptyState("No connections yet. Accepted requests will show up here.") }
-                    } else {
-                        items(uiState.connections) { connection ->
-                            ConnectionCard(
-                                connection = connection,
-                                myUid = uiState.myUid,
-                                getContactEmail = { uid -> viewModel.getContactEmail(uid) }
-                            )
-                        }
-                    }
-                }
+
             }
         }
     }
@@ -239,47 +224,6 @@ private fun OutgoingRequestCard(request: SatsangRequest) {
                 fontSize = 13.sp,
                 color = statusColor
             )
-        }
-    }
-}
-
-@Composable
-private fun ConnectionCard(
-    connection: SatsangRequest,
-    myUid: String,
-    getContactEmail: suspend (String) -> String
-) {
-    val (otherUid, otherName) = connection.otherPerson(myUid)
-    var email by remember { mutableStateOf<String?>(null) }
-
-    LaunchedEffect(otherUid) {
-        email = getContactEmail(otherUid)
-    }
-
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        color = Sage100,
-        border = BorderStroke(1.dp, Sage600)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = otherName,
-                fontFamily = FigtreeFamily,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 15.sp,
-                color = TextInk
-            )
-            if (!email.isNullOrBlank()) {
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "Contact: $email",
-                    fontFamily = FigtreeFamily,
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 13.sp,
-                    color = Sage600
-                )
-            }
         }
     }
 }
