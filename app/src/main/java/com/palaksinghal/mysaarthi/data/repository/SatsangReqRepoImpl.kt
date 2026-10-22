@@ -108,7 +108,7 @@ class SatsangReqRepoImpl @Inject constructor(
                 whereEqualTo("status","PENDING").
                 addSnapshotListener { snapshot,error ->
                     if(error!=null){
-                        close(error)
+                        trySend(emptyList())
                         return@addSnapshotListener
                     }
 
@@ -133,7 +133,7 @@ class SatsangReqRepoImpl @Inject constructor(
         whereEqualTo("fromUid", currentUid).
         addSnapshotListener { snapshot,error ->
             if(error!=null){
-                close(error)
+               trySend(emptyList())
                 return@addSnapshotListener
             }
 
@@ -185,7 +185,7 @@ class SatsangReqRepoImpl @Inject constructor(
             .whereEqualTo("status", "ACCEPTED")
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
-                    close(error)
+                    emitMerged()
                     return@addSnapshotListener
                 }
                 fromResults = snapshot?.documents?.mapNotNull { doc ->
@@ -199,7 +199,7 @@ class SatsangReqRepoImpl @Inject constructor(
             .whereEqualTo("status", "ACCEPTED")
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
-                    close(error)
+                    emitMerged()
                     return@addSnapshotListener
                 }
                 toResults = snapshot?.documents?.mapNotNull { doc ->
