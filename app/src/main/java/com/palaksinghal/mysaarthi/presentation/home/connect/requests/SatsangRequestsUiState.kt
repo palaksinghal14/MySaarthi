@@ -1,4 +1,4 @@
-package com.palaksinghal.mysaarthi.presentation.home.connect
+package com.palaksinghal.mysaarthi.presentation.home.connect.requests
 import com.palaksinghal.mysaarthi.domain.model.SatsangRequest
 
 data class SatsangRequestsUiState(

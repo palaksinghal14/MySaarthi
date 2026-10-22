@@ -1,8 +1,9 @@
-package com.palaksinghal.mysaarthi.presentation.home.connect
+package com.palaksinghal.mysaarthi.presentation.home.connect.requests
 
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.palaksinghal.mysaarthi.domain.model.SatsangRequest
 import com.palaksinghal.mysaarthi.domain.model.SatsangRequestStatus
 import com.palaksinghal.mysaarthi.domain.repository.AuthenticationRepo
 import com.palaksinghal.mysaarthi.domain.repository.SatsangRequestRepository
@@ -73,9 +74,9 @@ class SatsangRequestsViewModel @Inject constructor(
         }
     }
 
-    fun respondToRequest(requestId: String, accept: Boolean) {
+    fun respondToRequest(request : SatsangRequest, accept: Boolean) {
         viewModelScope.launch {
-            satsangRequestRepository.respondToRequest(requestId, accept)
+            satsangRequestRepository.respondToRequest(request, accept)
         }
     }
 

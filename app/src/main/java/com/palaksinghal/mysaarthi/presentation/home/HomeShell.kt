@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -25,7 +26,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.palaksinghal.mysaarthi.R
 import com.palaksinghal.mysaarthi.core.navigation.ScreenRoutes
-import com.palaksinghal.mysaarthi.presentation.home.connect.SatsangRequestsScreen
+import com.palaksinghal.mysaarthi.presentation.home.connect.requests.SatsangRequestsScreen
 import com.palaksinghal.mysaarthi.presentation.home.profile.YouScreen
 import com.palaksinghal.mysaarthi.presentation.home.today.EveningCheckInScreen
 import com.palaksinghal.mysaarthi.presentation.home.today.SadhanaDetailScreen
@@ -80,7 +81,7 @@ fun HomeShell(
             if(showBottomBar) {
                 NavigationBar(
                     containerColor = Bg,
-                    tonalElevation = androidx.compose.ui.unit.Dp(0f)
+                    tonalElevation = Dp(0f)
                 ) {
                     tabs.forEach { tab ->
                         val isSelected = currentDestination?.hierarchy?.any {

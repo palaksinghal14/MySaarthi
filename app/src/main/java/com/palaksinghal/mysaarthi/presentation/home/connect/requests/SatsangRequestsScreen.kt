@@ -1,4 +1,4 @@
-package com.palaksinghal.mysaarthi.presentation.home.connect
+package com.palaksinghal.mysaarthi.presentation.home.connect.requests
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -107,8 +107,8 @@ fun SatsangRequestsScreen(
                         items(uiState.incomingRequests) { request ->
                             IncomingRequestCard(
                                 request = request,
-                                onAccept = { viewModel.respondToRequest(request.requestId, true) },
-                                onDecline = { viewModel.respondToRequest(request.requestId, false) }
+                                onAccept = { viewModel.respondToRequest(request, true) },
+                                onDecline = { viewModel.respondToRequest(request, false) }
                             )
                         }
                     }
