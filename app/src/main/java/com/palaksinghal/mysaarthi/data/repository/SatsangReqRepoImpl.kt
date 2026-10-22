@@ -5,7 +5,9 @@ import com.palaksinghal.mysaarthi.core.utils.toAppException
 import com.palaksinghal.mysaarthi.di.ApplicationScope
 import com.palaksinghal.mysaarthi.domain.model.AppException
 import com.palaksinghal.mysaarthi.domain.model.SatsangRequest
+import com.palaksinghal.mysaarthi.domain.model.SatsangRequestStatus
 import com.palaksinghal.mysaarthi.domain.repository.AuthenticationRepo
+import com.palaksinghal.mysaarthi.domain.repository.ChatRepository
 import com.palaksinghal.mysaarthi.domain.repository.SatsangRequestRepository
 import com.palaksinghal.mysaarthi.domain.repository.UserProfileRepo
 import kotlinx.coroutines.CoroutineScope
@@ -22,6 +24,7 @@ class SatsangReqRepoImpl @Inject constructor(
     private val auth: AuthenticationRepo,
     private val userRepo: UserProfileRepo,
     private val firestore: FirebaseFirestore,
+    private val chatRepository: ChatRepository,
     @ApplicationScope private val appScope: CoroutineScope
 ) : SatsangRequestRepository {
 
@@ -143,14 +146,19 @@ class SatsangReqRepoImpl @Inject constructor(
         awaitClose { listener.remove() }
     }
 
-    override suspend fun respondToRequest(requestId: String, accept: Boolean): Result<Unit> {
+    override suspend fun respondToRequest(request: SatsangRequest, accept: Boolean): Result<Unit> {
         return try{
 
             val newStatus = if(accept) "ACCEPTED" else "DECLINED"
             firestore.collection("satsang_requests")
-                     .document(requestId)
+                     .document(request.requestId)
                      .update("status",newStatus)
                      .await()
+
+            if (accept) {
+                chatRepository.ensureConversation(request.copy(status = SatsangRequestStatus.ACCEPTED))
+            }
+
             Result.success(Unit)
 
         }catch (e: Exception){
