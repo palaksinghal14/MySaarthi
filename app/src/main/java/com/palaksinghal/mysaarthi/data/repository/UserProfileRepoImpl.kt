@@ -97,31 +97,10 @@ class UserProfileRepoImpl @Inject constructor(
          }
     }
 
-    override suspend fun deleteAllUserData(uid: String): Result<Unit> {
+    override suspend fun clearLocalData(uid: String): Result<Unit> {
         return try {
-            // Delete satsang_requests where this user is either party
-            val asFromUid = firestore.collection("satsang_requests")
-                .whereEqualTo("fromUid", uid)
-                .get()
-                .await()
-            val asToUid = firestore.collection("satsang_requests")
-                .whereEqualTo("toUid", uid)
-                .get()
-                .await()
-
-            (asFromUid.documents + asToUid.documents).forEach { doc ->
-                doc.reference.delete().await()
-            }
-
-            // Delete the user's Firestore profile document
-            firestore.collection("users").document(uid).delete().await()
-
-            // Delete local Room cache
             userProfileDao.deleteUserProfile(uid)
-
-            //delete sadhna entries
             sadhanaDao.deleteAll()
-
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e.toAppException())

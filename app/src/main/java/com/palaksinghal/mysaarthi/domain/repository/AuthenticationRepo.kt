@@ -11,4 +11,5 @@ interface AuthenticationRepo {
     suspend fun registerWithEmail(email:String , password:String):Result<User>
     fun logout()
     suspend fun deleteAccount() : Result<Unit>
+    suspend fun reauthenticate(password: String): Result<Unit>
 }

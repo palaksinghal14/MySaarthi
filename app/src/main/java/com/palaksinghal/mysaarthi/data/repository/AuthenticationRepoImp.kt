@@ -1,6 +1,7 @@
 package com.palaksinghal.mysaarthi.data.repository
 
 import android.content.Context
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.palaksinghal.mysaarthi.core.utils.toAppException
@@ -63,6 +64,22 @@ class AuthenticationRepoImp @Inject constructor(
             Result.failure(e.toAppException(context))
         }
 
+    }
+
+    override suspend fun reauthenticate(password: String): Result<Unit> {
+        return try {
+            val currentUser = auth.currentUser
+                ?: return Result.failure(AppException.UserNotFoundException)
+            val email = currentUser.email
+                ?: return Result.failure(AppException.UserNotFoundException)
+
+            val credential = EmailAuthProvider.getCredential(email, password)
+            currentUser.reauthenticate(credential).await()
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e.toAppException(context))
+        }
     }
 }
 
