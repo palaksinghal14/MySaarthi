@@ -20,12 +20,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.palaksinghal.mysaarthi.R
 import com.palaksinghal.mysaarthi.core.navigation.ScreenRoutes
+import com.palaksinghal.mysaarthi.presentation.home.connect.ConnectScreen
+import com.palaksinghal.mysaarthi.presentation.home.connect.chat.ChatScreen
 import com.palaksinghal.mysaarthi.presentation.home.connect.requests.SatsangRequestsScreen
 import com.palaksinghal.mysaarthi.presentation.home.profile.YouScreen
 import com.palaksinghal.mysaarthi.presentation.home.today.EveningCheckInScreen
@@ -56,7 +60,7 @@ fun HomeShell(
     val navBackStackEntry by tabNavController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    val pendingRequestCount by viewModel.pendingRequestCount.collectAsStateWithLifecycle()
+    val connectBadgeCount by viewModel.connectBadgeCount.collectAsStateWithLifecycle()
 
     // Only show bottom bar on the four main tab routes
     // Hide it on detail screens like ShlokaDetail, SadhanaDetail etc.
@@ -64,13 +68,13 @@ fun HomeShell(
         ScreenRoutes.Today.route,
         ScreenRoutes.Nearby.route,
         ScreenRoutes.You.route,
-        ScreenRoutes.SatsangRequests.route
+        ScreenRoutes.Connect.route
     )
 
     val tabs = listOf(
         BottomNavItem(ScreenRoutes.Today.route, "Today", R.drawable.ic_brahma_muhurta),
         BottomNavItem(ScreenRoutes.Nearby.route, "Nearby", R.drawable.ic_location),
-        BottomNavItem(ScreenRoutes.SatsangRequests.route, "Connect", icon= R.drawable.ic_face),
+        BottomNavItem(ScreenRoutes.Connect.route, "Connect", icon= R.drawable.ic_face),
         BottomNavItem(ScreenRoutes.You.route, "You", R.drawable.ic_satsang)
 
     )
@@ -89,7 +93,7 @@ fun HomeShell(
                         } == true
 
                         val badgeCount =
-                            if (tab.route == ScreenRoutes.SatsangRequests.route) pendingRequestCount
+                            if (tab.route == ScreenRoutes.Connect.route) connectBadgeCount
                             else 0
 
                         NavigationBarItem(
@@ -194,8 +198,33 @@ fun HomeShell(
                 }
                )
             }
-            // Now a top-level tab — no back button
-            composable(ScreenRoutes.SatsangRequests.route) { SatsangRequestsScreen() }
+
+            composable(ScreenRoutes.Connect.route) {
+                ConnectScreen(
+                    onOpenChat = { convId, otherUid ->
+                        tabNavController.navigate(ScreenRoutes.Chat.createRoute(convId, otherUid))
+                    },
+                    onOpenRequests = {
+                        tabNavController.navigate(ScreenRoutes.SatsangRequests.route)
+                    }
+                )
+            }
+
+            composable(ScreenRoutes.SatsangRequests.route) {
+                SatsangRequestsScreen(
+                    onBack = { tabNavController.popBackStack() }
+                )
+            }
+
+            composable(
+                route = ScreenRoutes.Chat.route,
+                arguments = listOf(
+                    navArgument(ScreenRoutes.Chat.ARG_CONV_ID) { type = NavType.StringType },
+                    navArgument(ScreenRoutes.Chat.ARG_OTHER_UID) { type = NavType.StringType }
+                )
+            ) {
+                ChatScreen(onBack = { tabNavController.popBackStack() })
+            }
 
             composable(ScreenRoutes.EditProfile.route) {
                 EditProfileScreen(
@@ -207,9 +236,6 @@ fun HomeShell(
                     onBack = { tabNavController.popBackStack() },
                     onSignOut =  onSignOut
                 )
-            }
-            composable(ScreenRoutes.SatsangRequests.route) {
-                SatsangRequestsScreen()
             }
         }
     }

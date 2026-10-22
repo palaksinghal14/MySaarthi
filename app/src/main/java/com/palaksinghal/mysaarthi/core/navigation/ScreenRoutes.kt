@@ -12,6 +12,7 @@ sealed class ScreenRoutes(val route :String) {
     object Today : ScreenRoutes("today")
     object Nearby : ScreenRoutes("nearby")
     object You : ScreenRoutes("you")
+    object Connect : ScreenRoutes("connect")
 
     // routes on today screen
     object ShlokaDetail : ScreenRoutes("shloka_detail")
@@ -21,5 +22,13 @@ sealed class ScreenRoutes(val route :String) {
     //routes on profile screen
     object EditProfile : ScreenRoutes("edit_profile")
     object Settings : ScreenRoutes("settings")
+
+    // routes on connect screen
     object SatsangRequests : ScreenRoutes("satsang_requests")
+
+    object Chat : ScreenRoutes("chat/{convId}/{otherUid}") {
+        const val ARG_CONV_ID = "convId"
+        const val ARG_OTHER_UID = "otherUid"
+        fun createRoute(convId: String, otherUid: String) = "chat/$convId/$otherUid"
+    }
 }
