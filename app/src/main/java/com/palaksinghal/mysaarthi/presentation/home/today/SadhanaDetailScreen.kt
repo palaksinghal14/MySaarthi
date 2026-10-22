@@ -36,7 +36,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import com.palaksinghal.mysaarthi.core.navigation.ScreenRoutes
 import com.palaksinghal.mysaarthi.domain.model.SadhanaEntry
-import com.palaksinghal.mysaarthi.presentation.home.HomeViewModel
+import com.palaksinghal.mysaarthi.presentation.home.today.HomeViewModel
 import com.palaksinghal.mysaarthi.presentation.theme.Accent
 import com.palaksinghal.mysaarthi.presentation.theme.Bg
 import com.palaksinghal.mysaarthi.presentation.theme.CaprasimoFamily
