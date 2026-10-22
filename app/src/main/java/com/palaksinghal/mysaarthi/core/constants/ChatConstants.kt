@@ -16,4 +16,5 @@ object ChatConstants {
 
     const val MAX_MESSAGE_LENGTH = 2000
     const val PAGE_SIZE = 50
+    const val REPORTS=  "reports"
 }
