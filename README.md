@@ -2,28 +2,44 @@
 
 **Walk the Bhagwat Marg, Together**
 
-MySaarthi is built for people walking the Bhagwat Marg — connect with the like-minded people, send and accept connection requests, and find nearby spiritual places with directions. Alongside that, it brings the complete Bhagavad Gita, daily sadhana tracking, reminders, and progress streaks into one place, so your path has both discipline and company.
+MySaarthi is built for people walking the Bhagwat Marg — A community-first spiritual companion where you can find and message fellow seekers near you and find nearby spiritual places with directions. Alongside that, it brings the complete Bhagavad Gita, daily sadhana tracking, reminders, and progress streaks into one place, so your path has both discipline and company.
 
-Currently in **closed testing** on the Google Play Store.
+**🟢 Live on the Google Play Store **
 
-## 📌 Download latest APK
+## 📌 GET THE APP FROM PLAY STORE
 
-[▶ Click here to download](https://github.com/palaksinghal14/MySaarthi/releases/tag/v1.0.0-closed-test)
+[▶ Click here to download]([https://github.com/palaksinghal14/MySaarthi/releases/tag/v1.0.0-closed-test](https://play.google.com/store/apps/details?id=com.palaksinghal.mysaarthi))
 
 
 ## 🎥 Demo Video
 
 📺 Watch the full app walkthrough:
 
-[▶ Click here to watch demo](https://drive.google.com/file/d/17CSLhZgv-aUQvhyuj4eLlBhVrfdI-CBA/view?usp=drivesdk)
+[▶ Click here to watch demo](https://drive.google.com/file/d/14bsWps5w3Q57m_hlNRUtdhJkTEvoDhNt/view?usp=drivesdk)
 
+
+---
+ 
+## 🪔 Why MySaarthi exists
+ 
+Every other Gita app is a book you read alone. Every other habit tracker is a streak you keep alone.
+ 
+MySaarthi is built on the idea that the Bhagwat Marg is **not meant to be walked alone**. The scripture and the sadhana tracker are the daily anchor — but the heart of the app is the community layer: discovering other seekers, asking to connect, and actually talking to them.
+ 
+---
 
 ---
 
 ## 🚀 Features
 
 **Find Fellow Seekers**
-Connect with people near you who are walking the same path- send and accept connection request, and build a real community — not just a solo tracker. Turn on "Open to Connect" to become visible to others and discover them too.
+Turn on **"Open to Connect"** and you become discoverable to others walking the same path — and they become discoverable to you.
+
+**Send a Satsang Request**
+Connections are **mutual by design**. You send a request, they accept or decline. Nothing opens until both people say yes.
+
+**Chat in the App**
+Once a request is accepted, a conversation opens between you and you both can chat.
 
 **Read the Bhagavad Gita**
 Read the complete Gita chapter by chapter, at your own pace, with translations in English and Hindi.
@@ -44,9 +60,13 @@ Your exact location is never shared — only an approximate area — and every c
 
 ## 📸 Screenshots
 
+| Chat Screen                         | Conversation list                                               |
+|----------------------------------------|---------------------------------------|
+| ![Nearby Temple](screenshots/13.1.jpg) | ![Nearby Seeker ](screenshots/15.jpg) |
+
 | Nearby Temple                          | Nearby Seeker                         | Connection Request                         |
 |----------------------------------------|---------------------------------------|--------------------------------------------|
-| ![Nearby Temple](screenshots/13.1.jpg) | ![Nearby Seeker ](screenshots/15.jpg) | ![Connection Request ](screenshots/16.jpg) | ![Food Guide](screenshots/food_guide.jpeg) |
+| ![Nearby Temple](screenshots/13.1.jpg) | ![Nearby Seeker ](screenshots/15.jpg) | ![Connection Request ](screenshots/16.jpg) 
 
 
 | Home                         | Profile                        | Settings                          |
@@ -243,18 +263,6 @@ app/src/main/java/com/palaksinghal/mysaarthi
         BootReceiver.kt
         ReminderAlarmReceiver.kt
         ReminderScheduler.kt
-```
-
-
-## Key Architecture Decisions
-
-- **AlarmManager over WorkManager** — WorkManager reminders were getting deferred by Doze mode on locked/idle devices. Switched to `AlarmManager.setExactAndAllowWhileIdle()` + a `BootReceiver` to survive reboots.
-- **Location written on intent, not lifecycle** — Refreshing location via app-foreground or auth-state triggers missed real cases (e.g. signup completing without the app ever backgrounding). Now written directly where `isOpenToSatsang` is actually set — onboarding completion and profile save — awaited before the screen navigates away, so the write can't be cancelled mid-flight.
-- **Privacy-first location** — Only a truncated ~1.2km geohash is ever stored or queried, never exact coordinates.
-- **Consent enforced twice** — Satsang visibility is gated client-side for UX and again in Firestore rules as the real authorization boundary.
-- **Typed errors end-to-end** — One exception mapper checks real device connectivity before matching error types, so a no-internet condition is never misreported as something else.
-
----
 
 ## 🔐 Permissions Used
 
