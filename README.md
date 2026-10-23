@@ -4,9 +4,9 @@
 
 MySaarthi is built for people walking the Bhagwat Marg — A community-first spiritual companion where you can find and message fellow seekers near you and find nearby spiritual places with directions. Alongside that, it brings the complete Bhagavad Gita, daily sadhana tracking, reminders, and progress streaks into one place, so your path has both discipline and company.
 
-**Live on the Google Play Store**
+**LIVE ON THE PLAY STORE**
 
-## 📌 Get the app from PLAY STORE
+## 📌 Get the app from play store
 
 [▶ Click here to download](https://play.google.com/store/apps/details?id=com.palaksinghal.mysaarthi)
 
