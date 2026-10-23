@@ -4,11 +4,11 @@
 
 MySaarthi is built for people walking the Bhagwat Marg — A community-first spiritual companion where you can find and message fellow seekers near you and find nearby spiritual places with directions. Alongside that, it brings the complete Bhagavad Gita, daily sadhana tracking, reminders, and progress streaks into one place, so your path has both discipline and company.
 
-**🟢 Live on the Google Play Store **
+**Live on the Google Play Store**
 
-## 📌 GET THE APP FROM PLAY STORE
+## 📌 Get the app from PLAY STORE
 
-[▶ Click here to download]([https://github.com/palaksinghal14/MySaarthi/releases/tag/v1.0.0-closed-test](https://play.google.com/store/apps/details?id=com.palaksinghal.mysaarthi))
+[▶ Click here to download](https://play.google.com/store/apps/details?id=com.palaksinghal.mysaarthi)
 
 
 ## 🎥 Demo Video
@@ -18,62 +18,56 @@ MySaarthi is built for people walking the Bhagwat Marg — A community-first spi
 [▶ Click here to watch demo](https://drive.google.com/file/d/14bsWps5w3Q57m_hlNRUtdhJkTEvoDhNt/view?usp=drivesdk)
 
 
----
  
 ## 🪔 Why MySaarthi exists
  
 Every other Gita app is a book you read alone. Every other habit tracker is a streak you keep alone.
  
 MySaarthi is built on the idea that the Bhagwat Marg is **not meant to be walked alone**. The scripture and the sadhana tracker are the daily anchor — but the heart of the app is the community layer: discovering other seekers, asking to connect, and actually talking to them.
- 
----
 
----
 
 ## 🚀 Features
 
-**Find Fellow Seekers**
+**Find Fellow Seekers**:
 Turn on **"Open to Connect"** and you become discoverable to others walking the same path — and they become discoverable to you.
 
-**Send a Satsang Request**
+**Send a Satsang Request**:
 Connections are **mutual by design**. You send a request, they accept or decline. Nothing opens until both people say yes.
 
-**Chat in the App**
+**Chat in the App**:
 Once a request is accepted, a conversation opens between you and you both can chat.
 
-**Read the Bhagavad Gita**
+**Read the Bhagavad Gita**:
 Read the complete Gita chapter by chapter, at your own pace, with translations in English and Hindi.
 
-**Daily Practice & Reminders**
+**Daily Practice & Reminders**:
 Track your daily sadhana and practices, set & get reminders so you never miss a day.
 
-**See Your Progress**
+**See Your Progress**:
 Keep track of your streaks over time — a clear record of how far you've walked on this path.
 
-**Discover Nearby Temples**
+**Discover Nearby Temples**:
 Find temples near you with an integrated map.
 
-**Private by Design**
+**Private by Design**:
 Your exact location is never shared — only an approximate area — and every connection is entirely your choice. Delete your account and data at any time.
 
----
 
 ## 📸 Screenshots
 
-| Chat Screen                         | Conversation list                                               |
-|----------------------------------------|---------------------------------------|
-| ![Nearby Temple](screenshots/13.1.jpg) | ![Nearby Seeker ](screenshots/15.jpg) |
+| Chat Screen                         | Conversation list                                            | Request Flow                                                 |
+|----------------------------------------|--------------------------------------------------------------|--------------------------------------------------------------|
+| ![Nearby Temple](screenshots/photo_2026-10-23_03-27-40.jpg) | ![Nearby Seeker ](screenshots/photo_2026-10-23_07-25-27.jpg) | ![Nearby Seeker ](screenshots/photo_2026-10-23_07-25-30.jpg) |
 
-| Nearby Temple                          | Nearby Seeker                         | Connection Request                         |
+| Nearby Temple                          | Nearby Seeker                         | Connection Request  Screen                 |
 |----------------------------------------|---------------------------------------|--------------------------------------------|
-| ![Nearby Temple](screenshots/13.1.jpg) | ![Nearby Seeker ](screenshots/15.jpg) | ![Connection Request ](screenshots/16.jpg) 
+| ![Nearby Temple](screenshots/13.1.jpg) | ![Nearby Seeker ](screenshots/photo_2026-10-23_07-25-23.jpg) | ![Connection Request ](screenshots/16.jpg) 
 
 
 | Home                         | Profile                        | Settings                          |
 |------------------------------|--------------------------------|-----------------------------------|
 | ![ Home ](screenshots/6.jpg) | ![Profile ](screenshots/9.jpg) | ![ Settings ](screenshots/12.jpg) |
 
----
 
 ## 🛠 Tech Stack
 
@@ -92,7 +86,7 @@ Your exact location is never shared — only an approximate area — and every c
 | Scheduling | AlarmManager + BroadcastReceiver |
 | Local Preferences | Jetpack DataStore |
 
----
+
 
 ## 🏗 Architecture
 
@@ -114,7 +108,7 @@ External services (Firebase Auth/Firestore, Fused Location Provider)
 - **Error handling** — A sealed `AppException` hierarchy with one mapper that checks real connectivity before matching exception types.
 - **Real-time layer** — Satsang requests/connections are exposed as `Flow`s via `callbackFlow` + Firestore listeners.
 
----
+
 
 ## 📁 Project Structure
 
@@ -122,62 +116,74 @@ External services (Firebase Auth/Firestore, Fused Location Provider)
 app/src/main/java/com/palaksinghal/mysaarthi
 │   MainActivity.kt
 │   MySaarthiApplication.kt
-│
+│   
 ├───core
 │   ├───components
 │   ├───constants
+│   │       ChatConstants.kt
+│   │       
 │   ├───navigation
 │   │       MySaarthiApp.kt
 │   │       ScreenRoutes.kt
-│   │
+│   │       
 │   └───utils
+│           ConversationId.kt
 │           ExceptionMapper.kt
 │           UiState.kt
-│
+│           
 ├───data
 │   ├───local
 │   │   ├───converters
 │   │   │       Converters.kt
-│   │   │
+│   │   │       
 │   │   ├───dao
 │   │   │       SadhanaDao.kt
 │   │   │       ShlokaDao.kt
 │   │   │       UserProfileDao.kt
-│   │   │
+│   │   │       
 │   │   ├───database
 │   │   │       GitaDatabase.kt
-│   │   │
+│   │   │       
 │   │   ├───datasources
 │   │   │       GitaLocalDataSource.kt
 │   │   │       UserPreferencesDataSource.kt
-│   │   │
+│   │   │       
 │   │   ├───dto
 │   │   │       SholkaDto.kt
-│   │   │
+│   │   │       
 │   │   └───entity
 │   │           SadhanaEntryEntity.kt
 │   │           SholkaEntity.kt
 │   │           UserProfileEntity.kt
-│   │
+│   │           
 │   ├───mapper
 │   ├───remote
+│   │   └───dto
+│   │           ConversationDto.kt
+│   │           MessageDto.kt
+│   │           
 │   └───repository
 │           AuthenticationRepoImp.kt
+│           ChatRepoImpl.kt
 │           LocationRepoImpl.kt
 │           NearbyRepositoryImpl.kt
 │           SadhanaRepositoryImpl.kt
 │           SatsangReqRepoImpl.kt
 │           ShlokaRepoImpl.kt
 │           UserProfileRepoImpl.kt
-│
+│           
 ├───di
+│       ApplicationScope.kt
 │       AppModule.kt
+│       CoroutineModule.kt
 │       FirebaseModule.kt
 │       RepositoryModule.kt
-│
+│       
 ├───domain
 │   ├───model
 │   │       AppException.kt
+│   │       ChatMessage.kt
+│   │       Conversation.kt
 │   │       DailyCompletionRate.kt
 │   │       Location.kt
 │   │       NearbySeeker.kt
@@ -188,83 +194,100 @@ app/src/main/java/com/palaksinghal/mysaarthi
 │   │       Shloka.kt
 │   │       User.kt
 │   │       UserProfile.kt
-│   │
+│   │       
 │   ├───repository
 │   │       AuthenticationRepo.kt
+│   │       ChatRepository.kt
 │   │       LocationRepository.kt
 │   │       NearbyRepository.kt
 │   │       SadhanaRepository.kt
 │   │       SatsangRequestRepository.kt
 │   │       ShlokaRepo.kt
 │   │       UserProfileRepo.kt
-│   │
-│   └───usecase          # reserved for future use
-│
+│   │       
+│   └───usecase
 ├───presentation
 │   ├───authentication
 │   │       AuthUiState.kt
 │   │       AuthViewModel.kt
 │   │       LoginScreen.kt
 │   │       RegisterScreen.kt
-│   │
+│   │       
 │   ├───components
 │   │       AuthTextfield.kt
-│   │
+│   │       
 │   ├───home
 │   │   │   HomeShell.kt
-│   │   │   HomeUiState.kt
-│   │   │   HomeViewModel.kt
-│   │   │
+│   │   │   HomeShellViewModel.kt
+│   │   │   
+│   │   ├───connect
+│   │   │   │   ConnectScreen.kt
+│   │   │   │   ConnectUiState.kt
+│   │   │   │   ConnectViewModel.kt
+│   │   │   │   
+│   │   │   ├───chat
+│   │   │   │       ChatScreen.kt
+│   │   │   │       ChatUiState.kt
+│   │   │   │       ChatViewModel.kt
+│   │   │   │       
+│   │   │   └───requests
+│   │   │           SatsangRequestsScreen.kt
+│   │   │           SatsangRequestsUiState.kt
+│   │   │           SatsangRequestsViewModel.kt
+│   │   │           
 │   │   ├───nearby
 │   │   │       NearbyScreen.kt
 │   │   │       NearbyUiState.kt
 │   │   │       NearbyViewModel.kt
-│   │   │
+│   │   │       
 │   │   ├───profile
 │   │   │       EditProfileScreen.kt
 │   │   │       EditProfileUiState.kt
 │   │   │       EditProfileViewModel.kt
-│   │   │       SatsangRequestsScreen.kt
 │   │   │       SettingsScreen.kt
 │   │   │       SettingsViewModel.kt
 │   │   │       YouScreen.kt
 │   │   │       YouUiState.kt
 │   │   │       YouViewModel.kt
-│   │   │
+│   │   │       
 │   │   └───today
 │   │           EveningCheckInScreen.kt
+│   │           HomeUiState.kt
+│   │           HomeViewModel.kt
 │   │           SadhanaDetailScreen.kt
 │   │           ShlokaDetailScreen.kt
 │   │           ShlokaDetailViewModel.kt
 │   │           TodayScreen.kt
-│   │
+│   │           
 │   ├───onboarding
 │   │       OnboardingScreen.kt
 │   │       OnboardingUiState.kt
 │   │       OnboardingViewModel.kt
-│   │
+│   │       
 │   ├───splash
 │   │       SplashScreen.kt
 │   │       SplashUiState.kt
 │   │       SplashViewModel.kt
-│   │
+│   │       
 │   ├───theme
 │   │       Color.kt
 │   │       Theme.kt
 │   │       Type.kt
-│   │
+│   │       
 │   ├───util
 │   │       AppExceptionMessages.kt
-│   │
+│   │       
 │   └───welcome
 │           WelcomeScreen.kt
-│
+│           
 └───worker
         BootReceiver.kt
         ReminderAlarmReceiver.kt
         ReminderScheduler.kt
 
+```
 ## 🔐 Permissions Used
+
 
 | Permission | Purpose |
 |------------|---------|
